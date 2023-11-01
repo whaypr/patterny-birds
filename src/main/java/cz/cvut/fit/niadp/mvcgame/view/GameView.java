@@ -4,20 +4,22 @@ import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.controller.GameController;
 import cz.cvut.fit.niadp.mvcgame.model.GameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
+import cz.cvut.fit.niadp.mvcgame.observer.Aspect;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
+import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.GraphicsContextNull;
+import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.IGraphicsContext;
 
 public class GameView implements IObserver {
 
     private final GameModel model;
     private final GameController controller;
-    private GraphicsContext gr;
+    private IGraphicsContext gr;
 
     public GameView(GameModel model) {
         this.model = model;
         this.controller = new GameController(this.model);
-        this.model.registerObserver(this);
+        this.model.registerObserver(this, Aspect.OBJECT_POSITIONS);
+        this.gr = GraphicsContextNull.getInstance();
     }
 
     public GameController getController() {
@@ -32,16 +34,19 @@ public class GameView implements IObserver {
 
     private void drawCannon() {
         Position cannonPosition = this.model.getCannonPosition();
-        this.gr.drawImage(new Image(MvcGameConfig.CANNON_IMAGE_RESOURCE), cannonPosition.getX(), cannonPosition.getY());
+        this.gr.drawImage(MvcGameConfig.CANNON_IMAGE_RESOURCE, cannonPosition.getX(), cannonPosition.getY());
     }
 
-    public void setGraphicsContext(GraphicsContext gr) {
+    public void setGraphicsContext(IGraphicsContext gr) {
         this.gr = gr;
         this.render();
     }
 
     @Override
-    public void update() {
-        this.render();
+    public void update(Aspect aspect) {
+        switch (aspect) {
+            case OBJECT_POSITIONS -> this.render();
+            default -> {}
+        }
     }
 }
