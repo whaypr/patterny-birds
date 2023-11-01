@@ -5,19 +5,21 @@ import cz.cvut.fit.niadp.mvcgame.controller.GameController;
 import cz.cvut.fit.niadp.mvcgame.model.GameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
-import javafx.scene.canvas.GraphicsContext;
+import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.GraphicsContextNull;
+import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.IGraphicsContext;
 import javafx.scene.image.Image;
 
 public class GameView implements IObserver {
 
     private final GameModel model;
     private final GameController controller;
-    private GraphicsContext gr;
+    private IGraphicsContext gr;
 
     public GameView(GameModel model) {
         this.model = model;
         this.controller = new GameController(this.model);
         this.model.registerObserver(this);
+        this.gr = GraphicsContextNull.getInstance();
     }
 
     public GameController getController() {
@@ -35,7 +37,7 @@ public class GameView implements IObserver {
         this.gr.drawImage(new Image(MvcGameConfig.CANNON_IMAGE_RESOURCE), cannonPosition.getX(), cannonPosition.getY());
     }
 
-    public void setGraphicsContext(GraphicsContext gr) {
+    public void setGraphicsContext(IGraphicsContext gr) {
         this.gr = gr;
         this.render();
     }

@@ -7,6 +7,7 @@ import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.controller.GameController;
 import cz.cvut.fit.niadp.mvcgame.model.GameModel;
 import cz.cvut.fit.niadp.mvcgame.view.GameView;
+import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.GraphicsContextJavaFXWrapper;
 import javafx.scene.canvas.GraphicsContext;
 
 public class MvcGame {
@@ -39,6 +40,6 @@ public class MvcGame {
     }
 
     public void setGraphicsContext(GraphicsContext gr) {
-        this.view.setGraphicsContext(gr);
+        this.view.setGraphicsContext(new GraphicsContextJavaFXWrapper(gr));
     }
 }
