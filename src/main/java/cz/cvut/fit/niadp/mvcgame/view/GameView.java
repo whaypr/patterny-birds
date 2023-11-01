@@ -4,6 +4,7 @@ import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.controller.GameController;
 import cz.cvut.fit.niadp.mvcgame.model.GameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
+import cz.cvut.fit.niadp.mvcgame.observer.Aspect;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
 import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.GraphicsContextNull;
 import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.IGraphicsContext;
@@ -18,7 +19,7 @@ public class GameView implements IObserver {
     public GameView(GameModel model) {
         this.model = model;
         this.controller = new GameController(this.model);
-        this.model.registerObserver(this);
+        this.model.registerObserver(this, Aspect.OBJECT_POSITIONS);
         this.gr = GraphicsContextNull.getInstance();
     }
 
@@ -43,7 +44,10 @@ public class GameView implements IObserver {
     }
 
     @Override
-    public void update() {
-        this.render();
+    public void update(Aspect aspect) {
+        switch (aspect) {
+            case OBJECT_POSITIONS -> this.render();
+            default -> {}
+        }
     }
 }
