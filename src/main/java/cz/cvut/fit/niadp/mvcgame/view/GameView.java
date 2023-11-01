@@ -8,7 +8,6 @@ import cz.cvut.fit.niadp.mvcgame.observer.Aspect;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
 import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.GraphicsContextNull;
 import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.IGraphicsContext;
-import javafx.scene.image.Image;
 
 public class GameView implements IObserver {
 
@@ -35,7 +34,7 @@ public class GameView implements IObserver {
 
     private void drawCannon() {
         Position cannonPosition = this.model.getCannonPosition();
-        this.gr.drawImage(new Image(MvcGameConfig.CANNON_IMAGE_RESOURCE), cannonPosition.getX(), cannonPosition.getY());
+        this.gr.drawImage(MvcGameConfig.CANNON_IMAGE_RESOURCE, cannonPosition.getX(), cannonPosition.getY());
     }
 
     public void setGraphicsContext(IGraphicsContext gr) {

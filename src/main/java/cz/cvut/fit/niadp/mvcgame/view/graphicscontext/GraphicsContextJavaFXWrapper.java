@@ -17,7 +17,7 @@ public class GraphicsContextJavaFXWrapper implements IGraphicsContext {
     }
 
     @Override
-    public void drawImage(Image img, double x, double y) {
-        graphicsContext.drawImage(img, x, y);
+    public void drawImage(String imgPath, double x, double y) {
+        graphicsContext.drawImage(new Image(imgPath), x, y);
     }
 }
