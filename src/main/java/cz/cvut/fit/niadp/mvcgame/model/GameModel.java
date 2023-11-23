@@ -27,7 +27,7 @@ public class GameModel implements IObservable {
 
     public GameModel() {
         this.observers = new HashMap<>();
-        this.gameObjectsFactory = new GameObjectsFactoryA(this);
+        this.gameObjectsFactory = GameObjectsFactoryA.getInstance(this);
         this.cannon = this.gameObjectsFactory.createCannon();
         this.missiles = new ArrayList<>();
     }

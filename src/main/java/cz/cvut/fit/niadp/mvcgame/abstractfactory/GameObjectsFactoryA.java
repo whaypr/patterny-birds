@@ -8,20 +8,26 @@ import cz.cvut.fit.niadp.mvcgame.model.gameObjects.MissileA;
 
 public class GameObjectsFactoryA implements IGameObjectsFactory {
     private GameModel model;
-    private static IGameObjectsFactory instance;
+    // volatile so that double check lock would work correctly.
+    private static volatile GameObjectsFactoryA instance;
 
-    public GameObjectsFactoryA(GameModel model) {
-        // TODO Singleton task
+
+    private GameObjectsFactoryA(GameModel model) {
         this.model = model;
     }
 
-    public GameObjectsFactoryA() {
-        // TODO Singleton task
-    }
-
-    public static IGameObjectsFactory getInstance() {
-        // TODO Singleton task
-        return new GameObjectsFactoryA();
+    public static GameObjectsFactoryA getInstance(GameModel model) {
+        // double-checked locking
+        GameObjectsFactoryA result = instance;
+        if (result != null) {
+            return result;
+        }
+        synchronized(GameObjectsFactoryA.class) {
+            if (instance == null) {
+                instance = new GameObjectsFactoryA(model);
+            }
+            return instance;
+        }
     }
 
     @Override
