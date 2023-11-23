@@ -3,12 +3,15 @@ package cz.cvut.fit.niadp.mvcgame.visitor;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
+import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.GraphicsContextNull;
 import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.IGraphicsContext;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 public class GameObjectsRender implements IGameObjectsVisitor {
     private IGraphicsContext gr;
+
+    public GameObjectsRender() {
+        this.gr = GraphicsContextNull.getInstance();
+    }
 
     public void setGraphicsContext(IGraphicsContext gr) {
         this.gr = gr;
