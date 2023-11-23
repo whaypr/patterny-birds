@@ -17,10 +17,10 @@ public class GameView implements IObserver {
     private final GameObjectsRender render;
 
     public GameView(GameModel model) {
-        this.model = model;
-        this.controller = new GameController(this.model);
-        this.model.registerObserver(this, Aspect.OBJECT_POSITIONS);
         this.gr = GraphicsContextNull.getInstance();
+        this.model = model;
+        this.model.registerObserver(this, Aspect.OBJECT_POSITIONS);
+        this.controller = new GameController(this.model);
         this.render = new GameObjectsRender();
     }
 
