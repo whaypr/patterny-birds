@@ -21,6 +21,9 @@ public class GameController {
                 case MvcGameConfig.DOWN_KEY:
                     this.model.moveCannonDown();
                     break;
+                case MvcGameConfig.SHOOT_KEY:
+                    this.model.cannonShoot();
+                    break;
                 case MvcGameConfig.EXIT_KEY:
                     System.exit(0);
                     break;
@@ -28,5 +31,7 @@ public class GameController {
                     //nothing
             }
         }
+        this.model.update();
+        pressedKeysCodes.clear();
     }
 }
