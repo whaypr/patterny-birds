@@ -8,9 +8,9 @@ public class GameObjectsFactoryATest {
 
     @Test
     public void singletonTest() {
-        GameModel model = new GameModel();
-        IGameObjectsFactory instance1 = GameObjectsFactoryA.getInstance(model);
-        IGameObjectsFactory instance2 = GameObjectsFactoryA.getInstance(model);
+        GameObjectsFactoryA.createInstance(new GameModel());
+        IGameObjectsFactory instance1 = GameObjectsFactoryA.getInstance();
+        IGameObjectsFactory instance2 = GameObjectsFactoryA.getInstance();
         Assert.assertEquals(instance1.hashCode(), instance2.hashCode());
     }
 }

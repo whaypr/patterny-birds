@@ -7,27 +7,26 @@ import cz.cvut.fit.niadp.mvcgame.model.gameObjects.CannonA;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.MissileA;
 
 public class GameObjectsFactoryA implements IGameObjectsFactory {
-    private GameModel model;
+    private static GameModel model;
     // volatile so that double check lock would work correctly.
     private static volatile GameObjectsFactoryA instance;
 
+    private GameObjectsFactoryA() {}
 
-    private GameObjectsFactoryA(GameModel model) {
-        this.model = model;
-    }
+    public static void createInstance(GameModel m) {
+        model = m;
 
-    public static GameObjectsFactoryA getInstance(GameModel model) {
-        // double-checked locking
-        GameObjectsFactoryA result = instance;
-        if (result != null) {
-            return result;
-        }
         synchronized(GameObjectsFactoryA.class) {
             if (instance == null) {
-                instance = new GameObjectsFactoryA(model);
+                instance = new GameObjectsFactoryA();
             }
-            return instance;
         }
+    }
+
+    public static GameObjectsFactoryA getInstance() {
+        if (instance == null)
+            throw new RuntimeException("The model must be initialized before getting the instance!");
+        return instance;
     }
 
     @Override
