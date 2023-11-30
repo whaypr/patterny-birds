@@ -12,6 +12,9 @@ public class CannonA extends AbsCannon {
     public CannonA(Position initPosition, IGameObjectsFactory gameObjectsFactory) {
         this.position = initPosition;
         this.gameObjectsFactory = gameObjectsFactory;
+
+        this.power = MvcGameConfig.INIT_POWER;
+        this.angle = MvcGameConfig.INIT_ANGLE;
     }
 
     @Override
@@ -25,7 +28,27 @@ public class CannonA extends AbsCannon {
     }
 
     @Override
+    public void aimUp() {
+        this.angle -= MvcGameConfig.ANGLE_STEP;
+    }
+
+    @Override
+    public void aimDown() {
+        this.angle += MvcGameConfig.ANGLE_STEP;
+    }
+
+    @Override
+    public void powerUp() {
+        this.power += MvcGameConfig.POWER_STEP;
+    }
+
+    @Override
+    public void powerDown() {
+        this.power -= MvcGameConfig.POWER_STEP;
+    }
+
+    @Override
     public AbsMissile shoot() {
-        return this.gameObjectsFactory.createMissile();
+        return this.gameObjectsFactory.createMissile(this.angle, this.power);
     }
 }

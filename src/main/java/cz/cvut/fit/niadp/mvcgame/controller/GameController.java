@@ -24,6 +24,18 @@ public class GameController {
                 case MvcGameConfig.SHOOT_KEY:
                     this.model.cannonShoot();
                     break;
+                case MvcGameConfig.AIM_UP_KEY:
+                    this.model.aimCannonUp();
+                    break;
+                case MvcGameConfig.AIM_DOWN_KEY:
+                    this.model.aimCannonDown();
+                    break;
+                case MvcGameConfig.POWER_UP_KEY:
+                    this.model.cannonPowerUp();
+                    break;
+                case MvcGameConfig.POWER_DOWN_KEY:
+                    this.model.cannonPowerDown();
+                    break;
                 case MvcGameConfig.EXIT_KEY:
                     System.exit(0);
                     break;
