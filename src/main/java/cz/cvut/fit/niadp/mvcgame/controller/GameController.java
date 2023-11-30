@@ -1,5 +1,6 @@
 package cz.cvut.fit.niadp.mvcgame.controller;
 
+import cz.cvut.fit.niadp.mvcgame.memento.CareTaker;
 import cz.cvut.fit.niadp.mvcgame.model.GameModel;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 
@@ -35,6 +36,18 @@ public class GameController {
                     break;
                 case MvcGameConfig.POWER_DOWN_KEY:
                     this.model.cannonPowerDown();
+                    break;
+                case MvcGameConfig.MOVING_STRATEGY_KEY:
+                    this.model.toggleMovingStrategy();
+                    break;
+                case MvcGameConfig.SHOOTING_MODE_KEY:
+                    this.model.toggleShootingMode();
+                    break;
+                case MvcGameConfig.STORE_SNAPSHOT_KEY:
+                    CareTaker.getInstance().createMemento();
+                    break;
+                case MvcGameConfig.RESTORE_SNAPSHOT_KEY:
+                    CareTaker.getInstance().setMemento();
                     break;
                 case MvcGameConfig.EXIT_KEY:
                     System.exit(0);

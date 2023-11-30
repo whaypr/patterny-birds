@@ -43,8 +43,11 @@ public class GameView implements IObserver {
     @Override
     public void update(Aspect aspect) {
         switch (aspect) {
-            case OBJECT_POSITIONS -> this.render();
-            default -> {}
+            case OBJECT_POSITIONS:
+            case OBJECT_ANGLES:
+            case STATUS:
+                this.render();
+            default: {}
         }
     }
 }

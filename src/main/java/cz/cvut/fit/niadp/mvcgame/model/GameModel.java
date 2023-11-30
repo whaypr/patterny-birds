@@ -12,6 +12,9 @@ import java.util.Map;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
+import cz.cvut.fit.niadp.mvcgame.strategy.IMovingStrategy;
+import cz.cvut.fit.niadp.mvcgame.strategy.RealisticMovingStrategy;
+import cz.cvut.fit.niadp.mvcgame.strategy.SimpleMovingStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +27,14 @@ public class GameModel implements IObservable {
     private final Map<Aspect, Set<IObserver>> observers;
     private IGameObjectsFactory gameObjectsFactory;
     private final List<AbsMissile> missiles;
+    private IMovingStrategy movingStrategy;
 
     public GameModel() {
         this.observers = new HashMap<>();
         this.gameObjectsFactory = new GameObjectsFactoryA(this);
         this.cannon = this.gameObjectsFactory.createCannon();
         this.missiles = new ArrayList<>();
+        this.movingStrategy = new SimpleMovingStrategy();
     }
 
     public void update() {
@@ -37,7 +42,7 @@ public class GameModel implements IObservable {
     }
 
     private void moveMissiles() {
-        this.missiles.forEach(missile -> missile.move(new Vector(MvcGameConfig.MOVE_STEP, 0)));
+        this.missiles.forEach(AbsMissile::move);
         this.destroyMissiles();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
     }
@@ -63,28 +68,28 @@ public class GameModel implements IObservable {
     }
 
     public void cannonShoot() {
-        this.missiles.add(this.cannon.shoot());
+        this.missiles.addAll(this.cannon.shoot());
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
     }
 
     public void aimCannonUp() {
         this.cannon.aimUp();
-        this.notifyObservers();
+        this.notifyObservers(Aspect.OBJECT_ANGLES);
     }
 
     public void aimCannonDown() {
         this.cannon.aimDown();
-        this.notifyObservers();
+        this.notifyObservers(Aspect.OBJECT_ANGLES);
     }
 
     public void cannonPowerUp() {
         this.cannon.powerUp();
-        this.notifyObservers();
+        this.notifyObservers(Aspect.STATUS);
     }
 
     public void cannonPowerDown() {
         this.cannon.powerDown();
-        this.notifyObservers();
+        this.notifyObservers(Aspect.STATUS);
     }
 
     @Override
@@ -111,5 +116,45 @@ public class GameModel implements IObservable {
 
     public List<GameObject> getGameObjects() {
         return Stream.concat(Stream.of(this.cannon), this.missiles.stream()).toList();
+    }
+
+    public IMovingStrategy getMovingStrategy() {
+        return this.movingStrategy;
+    }
+
+    public void toggleMovingStrategy() {
+        if (this.movingStrategy instanceof SimpleMovingStrategy) {
+            this.movingStrategy = new RealisticMovingStrategy();
+        }
+        else if (this.movingStrategy instanceof RealisticMovingStrategy) {
+            this.movingStrategy = new SimpleMovingStrategy();
+        }
+        else {
+
+        }
+    }
+
+    public void toggleShootingMode() {
+        this.cannon.toggleShootingMode();
+        this.notifyObservers(Aspect.STATUS);
+    }
+
+    private static class Memento {
+        private int cannonPositionX;
+        private int cannonPositionY;
+        // game model snapshot (enemies, gameInfo, strategy, state)
+    }
+
+    public Object createMemento() {
+        Memento gameModelSnapshot = new Memento();
+        gameModelSnapshot.cannonPositionX = this.getCannonPosition().getX();
+        gameModelSnapshot.cannonPositionY = this.getCannonPosition().getY();
+        return gameModelSnapshot;
+    }
+
+    public void setMemento(Object memento) {
+        Memento gameModelSnapshot = (Memento) memento;
+        this.cannon.getPosition().setX(gameModelSnapshot.cannonPositionX);
+        this.cannon.getPosition().setY(gameModelSnapshot.cannonPositionY);
     }
 }
