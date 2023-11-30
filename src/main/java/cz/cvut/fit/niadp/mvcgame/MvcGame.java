@@ -8,6 +8,7 @@ import cz.cvut.fit.niadp.mvcgame.controller.GameController;
 import cz.cvut.fit.niadp.mvcgame.model.GameModel;
 import cz.cvut.fit.niadp.mvcgame.view.GameView;
 import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.GraphicsContextJavaFXWrapper;
+import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 import javafx.scene.canvas.GraphicsContext;
 
 public class MvcGame {
@@ -18,7 +19,8 @@ public class MvcGame {
     private GameController controller;
 
     public void init() {
-        this.model = new GameModel();
+        GameObjectsSoundMaker soundMaker = new GameObjectsSoundMaker();
+        this.model = new GameModel(soundMaker);
         this.view = new GameView(model);
         this.controller = this.view.getController();
     }
