@@ -15,6 +15,7 @@ import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
 import cz.cvut.fit.niadp.mvcgame.strategy.IMovingStrategy;
 import cz.cvut.fit.niadp.mvcgame.strategy.RealisticMovingStrategy;
 import cz.cvut.fit.niadp.mvcgame.strategy.SimpleMovingStrategy;
+import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,16 @@ public class GameModel implements IObservable {
     private IGameObjectsFactory gameObjectsFactory;
     private final List<AbsMissile> missiles;
     private IMovingStrategy movingStrategy;
+    private final GameObjectsSoundMaker soundMaker;
 
-    public GameModel() {
+    public GameModel(GameObjectsSoundMaker soundMaker) {
         this.observers = new HashMap<>();
-        this.gameObjectsFactory = new GameObjectsFactoryA(this);
+        GameObjectsFactoryA.createInstance(this);
+        this.gameObjectsFactory = GameObjectsFactoryA.getInstance();
         this.cannon = this.gameObjectsFactory.createCannon();
         this.missiles = new ArrayList<>();
         this.movingStrategy = new SimpleMovingStrategy();
+        this.soundMaker = soundMaker;
     }
 
     public void update() {
@@ -60,16 +64,20 @@ public class GameModel implements IObservable {
     public void moveCannonUp() {
         this.cannon.moveUp();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
+        cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
     }
 
     public void moveCannonDown() {
         this.cannon.moveDown();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
+        cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
     }
 
     public void cannonShoot() {
-        this.missiles.addAll(this.cannon.shoot());
+        List<AbsMissile> missiles = this.cannon.shoot();
+        this.missiles.addAll(missiles);
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
+        missiles.forEach(m -> m.acceptVisitor(soundMaker));
     }
 
     public void aimCannonUp() {

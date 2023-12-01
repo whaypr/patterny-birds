@@ -31,6 +31,7 @@ public class MvcGameConfig {
     public static final String RESTORE_SNAPSHOT_KEY = "R";
 
     public static final String CANNON_IMAGE_RESOURCE = "images/cannon.png";
-
+    public static final String CANNON_MOVE_SOUND_RESOURCE = "sounds/canonMove.wav";
     public static final String MISSILE_IMAGE_RESOURCE = "images/missile.png";
+    public static final String MISSILE_LAUNCH_SOUND_RESOURCE = "sounds/missileLaunch.wav";
 }
