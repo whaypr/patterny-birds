@@ -12,6 +12,7 @@ import java.util.Map;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
+import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +25,15 @@ public class GameModel implements IObservable {
     private final Map<Aspect, Set<IObserver>> observers;
     private IGameObjectsFactory gameObjectsFactory;
     private final List<AbsMissile> missiles;
+    private final GameObjectsSoundMaker soundMaker;
 
-    public GameModel() {
+    public GameModel(GameObjectsSoundMaker soundMaker) {
         this.observers = new HashMap<>();
-        this.gameObjectsFactory = new GameObjectsFactoryA(this);
+        GameObjectsFactoryA.createInstance(this);
+        this.gameObjectsFactory = GameObjectsFactoryA.getInstance();
         this.cannon = this.gameObjectsFactory.createCannon();
         this.missiles = new ArrayList<>();
+        this.soundMaker = soundMaker;
     }
 
     public void update() {
@@ -55,16 +59,20 @@ public class GameModel implements IObservable {
     public void moveCannonUp() {
         this.cannon.moveUp();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
+        cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
     }
 
     public void moveCannonDown() {
         this.cannon.moveDown();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
+        cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
     }
 
     public void cannonShoot() {
-        this.missiles.add(this.cannon.shoot());
+        AbsMissile missile = this.cannon.shoot();
+        this.missiles.add(missile);
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
+        missile.acceptVisitor(soundMaker); // soundMaker.visitMissile(missile);
     }
 
     @Override
