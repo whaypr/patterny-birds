@@ -10,8 +10,8 @@ public class SimpleMovingStrategy implements IMovingStrategy {
         double initAngle = missile.getInitAngle();
         long time = missile.getAge() / 100;
 
-        int dX = (int) (initVelocity * time * Math.cos(initAngle));
-        int dY = (int) (initVelocity * time * Math.sin(initAngle));
+        int dX = (int) (initVelocity * Math.cos(initAngle));
+        int dY = (int) (initVelocity * Math.sin(initAngle));
 
         missile.move(new Vector(dX, dY));
     }
