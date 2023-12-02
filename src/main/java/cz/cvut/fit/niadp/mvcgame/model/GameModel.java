@@ -75,7 +75,9 @@ public class GameModel implements IObservable {
         List<AbsMissile> missiles = this.cannon.shoot();
         this.missiles.addAll(missiles);
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        missiles.forEach(m -> m.acceptVisitor(soundMaker));
+
+        // play sound only once even if multiple missiles are shot
+        missiles.get(0).acceptVisitor(soundMaker); // soundMaker.visitMissile(missiles.get(0));
     }
 
     public void aimCannonUp() {
@@ -146,6 +148,14 @@ public class GameModel implements IObservable {
     public void toggleShootingMode() {
         this.cannon.toggleShootingMode();
         this.notifyObservers(Aspect.STATUS);
+    }
+
+    public void addMissilesForDynamicShootingMode(int toAdd) {
+        cannon.addMissilesForDynamicShootingMode(toAdd);
+    }
+
+    public void removeMissilesForDynamicShootingMode(int toRemove) {
+        cannon.removeMissilesForDynamicShootingMode(toRemove);
     }
 
     private static class Memento {

@@ -40,6 +40,12 @@ public class GameController {
                 case MvcGameConfig.MOVING_STRATEGY_KEY:
                     this.model.toggleMovingStrategy();
                     break;
+                case MvcGameConfig.DYNAMIC_SHOOTING_MODE_ADD_MISSILE_KEY:
+                    this.model.addMissilesForDynamicShootingMode(1);
+                    break;
+                case MvcGameConfig.DYNAMIC_SHOOTING_MODE_REMOVE_MISSILE_KEY:
+                    this.model.removeMissilesForDynamicShootingMode(1);
+                    break;
                 case MvcGameConfig.SHOOTING_MODE_KEY:
                     this.model.toggleShootingMode();
                     break;

@@ -1,6 +1,8 @@
 package cz.cvut.fit.niadp.mvcgame.model.gameObjects;
 
+import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;
+import cz.cvut.fit.niadp.mvcgame.state.DynamicShootingMode;
 import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 import cz.cvut.fit.niadp.mvcgame.state.SingleShootingMode;
 import cz.cvut.fit.niadp.mvcgame.visitor.IGameObjectsVisitor;
@@ -12,6 +14,7 @@ public abstract class AbsCannon extends GameObject {
     protected IShootingMode shootingMode;
     protected static IShootingMode SINGLE_SHOOTING_MODE = new SingleShootingMode();
     protected static IShootingMode DOUBLE_SHOOTING_MODE = new DoubleShootingMode();
+    protected static DynamicShootingMode DYNAMIC_SHOOTING_MODE = new DynamicShootingMode(MvcGameConfig.DYNAMIC_SHOOTING_MODE_DEFAULT_NUMBER_OF_MISSILES);
 
     protected int power;
     protected double angle;
@@ -33,4 +36,6 @@ public abstract class AbsCannon extends GameObject {
     }
 
     public abstract void toggleShootingMode();
+    public abstract void addMissilesForDynamicShootingMode(int toAdd);
+    public abstract void removeMissilesForDynamicShootingMode(int toRemove);
 }
