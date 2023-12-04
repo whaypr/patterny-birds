@@ -5,6 +5,7 @@ import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.Vector;
 import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;
+import cz.cvut.fit.niadp.mvcgame.state.DynamicShootingMode;
 import cz.cvut.fit.niadp.mvcgame.state.SingleShootingMode;
 
 import java.util.ArrayList;
@@ -70,14 +71,22 @@ public class CannonA extends AbsCannon {
 
     @Override
     public void toggleShootingMode() {
-        if(this.shootingMode instanceof SingleShootingMode) {
+        if (this.shootingMode instanceof SingleShootingMode) {
             this.shootingMode = DOUBLE_SHOOTING_MODE;
-        }
-        else if (this.shootingMode instanceof DoubleShootingMode) {
+        } else if (this.shootingMode instanceof DoubleShootingMode) {
+            this.shootingMode = DYNAMIC_SHOOTING_MODE;
+        } else if (this.shootingMode instanceof DynamicShootingMode) {
             this.shootingMode = SINGLE_SHOOTING_MODE;
         }
-        else {
+    }
 
-        }
+    @Override
+    public void addMissilesForDynamicShootingMode(int toAdd) {
+        DYNAMIC_SHOOTING_MODE.addMissiles(toAdd);
+    }
+
+    @Override
+    public void removeMissilesForDynamicShootingMode(int toRemove) {
+        DYNAMIC_SHOOTING_MODE.removeMissiles(toRemove);
     }
 }

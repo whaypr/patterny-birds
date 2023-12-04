@@ -12,9 +12,7 @@ import java.util.Map;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
-import cz.cvut.fit.niadp.mvcgame.strategy.IMovingStrategy;
-import cz.cvut.fit.niadp.mvcgame.strategy.RealisticMovingStrategy;
-import cz.cvut.fit.niadp.mvcgame.strategy.SimpleMovingStrategy;
+import cz.cvut.fit.niadp.mvcgame.strategy.*;
 import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 
 import java.util.ArrayList;
@@ -77,7 +75,9 @@ public class GameModel implements IObservable {
         List<AbsMissile> missiles = this.cannon.shoot();
         this.missiles.addAll(missiles);
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        missiles.forEach(m -> m.acceptVisitor(soundMaker));
+
+        // play sound only once even if multiple missiles are shot
+        missiles.get(0).acceptVisitor(soundMaker); // soundMaker.visitMissile(missiles.get(0));
     }
 
     public void aimCannonUp() {
@@ -135,16 +135,27 @@ public class GameModel implements IObservable {
             this.movingStrategy = new RealisticMovingStrategy();
         }
         else if (this.movingStrategy instanceof RealisticMovingStrategy) {
-            this.movingStrategy = new SimpleMovingStrategy();
+            this.movingStrategy = new SinusoidalMovingStrategy();
         }
-        else {
-
+        else if (this.movingStrategy instanceof SinusoidalMovingStrategy) {
+            this.movingStrategy = new CircularMovingStrategy();
+        }
+        else if (this.movingStrategy instanceof CircularMovingStrategy) {
+            this.movingStrategy = new SimpleMovingStrategy();
         }
     }
 
     public void toggleShootingMode() {
         this.cannon.toggleShootingMode();
         this.notifyObservers(Aspect.STATUS);
+    }
+
+    public void addMissilesForDynamicShootingMode(int toAdd) {
+        cannon.addMissilesForDynamicShootingMode(toAdd);
+    }
+
+    public void removeMissilesForDynamicShootingMode(int toRemove) {
+        cannon.removeMissilesForDynamicShootingMode(toRemove);
     }
 
     private static class Memento {

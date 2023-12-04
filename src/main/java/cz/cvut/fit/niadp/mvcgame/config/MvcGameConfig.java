@@ -14,6 +14,7 @@ public class MvcGameConfig {
     public static final double GRAVITY = 9.81;
     public static final int MAX_POWER = 50;
     public static final int MIN_POWER = 1;
+    public static final int DYNAMIC_SHOOTING_MODE_DEFAULT_NUMBER_OF_MISSILES = 3;
 
     public static final String GAME_TITLE = "The NI-ADP MvcGame";
 
@@ -26,6 +27,8 @@ public class MvcGameConfig {
     public static final String POWER_UP_KEY = "F";
     public static final String POWER_DOWN_KEY = "D";
     public static final String MOVING_STRATEGY_KEY = "M";
+    public static final String DYNAMIC_SHOOTING_MODE_ADD_MISSILE_KEY = "O";
+    public static final String DYNAMIC_SHOOTING_MODE_REMOVE_MISSILE_KEY = "P";
     public static final String SHOOTING_MODE_KEY = "N";
     public static final String STORE_SNAPSHOT_KEY = "S";
     public static final String RESTORE_SNAPSHOT_KEY = "R";

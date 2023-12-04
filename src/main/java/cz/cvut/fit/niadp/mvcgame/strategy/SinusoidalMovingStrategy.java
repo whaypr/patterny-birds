@@ -1,18 +1,21 @@
 package cz.cvut.fit.niadp.mvcgame.strategy;
 
-import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.Vector;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
 
-public class RealisticMovingStrategy implements IMovingStrategy {
+public class SinusoidalMovingStrategy implements IMovingStrategy {
     @Override
     public void updatePosition(AbsMissile missile) {
         int initVelocity = missile.getInitVelocity();
         double initAngle = missile.getInitAngle();
         long time = missile.getAge() / 100;
 
-        int dX = (int) (initVelocity * Math.cos(initAngle));
-        int dY = (int) (initVelocity * Math.sin(initAngle) + (0.5 * MvcGameConfig.GRAVITY * time * time));
+        int amplitude = 10;
+        var x = time;
+        var y = amplitude * Math.sin(time);
+
+        int dX = (int)(((x * Math.cos(initAngle)) - (y * Math.sin(initAngle))) * initVelocity / 20.);
+        int dY = (int)(((x * Math.sin(initAngle)) + (y * Math.cos(initAngle))) * initVelocity / 20.);
 
         missile.move(new Vector(dX, dY));
     }
