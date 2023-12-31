@@ -2,15 +2,13 @@ package cz.cvut.fit.niadp.mvcgame;
 
 import java.util.List;
 
+import cz.cvut.fit.niadp.mvcgame.bridge.IGameGraphics;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
-// in the future, use Bridge to remove this dependency
 import cz.cvut.fit.niadp.mvcgame.controller.GameController;
 import cz.cvut.fit.niadp.mvcgame.memento.CareTaker;
 import cz.cvut.fit.niadp.mvcgame.model.GameModel;
 import cz.cvut.fit.niadp.mvcgame.view.GameView;
-import cz.cvut.fit.niadp.mvcgame.view.graphicscontext.GraphicsContextJavaFXWrapper;
 import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
-import javafx.scene.canvas.GraphicsContext;
 
 public class MvcGame {
 
@@ -43,7 +41,7 @@ public class MvcGame {
         return  MvcGameConfig.MAX_Y;
     }
 
-    public void setGraphicsContext(GraphicsContext gr) {
-        this.view.setGraphicsContext(new GraphicsContextJavaFXWrapper(gr));
+    public void setGraphicsContext(IGameGraphics gameGraphics) {
+        this.view.setGraphicsContext(gameGraphics);
     }
 }

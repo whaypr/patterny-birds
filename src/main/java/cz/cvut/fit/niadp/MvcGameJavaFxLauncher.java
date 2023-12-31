@@ -1,11 +1,13 @@
 package cz.cvut.fit.niadp;
 
+import cz.cvut.fit.niadp.mvcgame.bridge.GameGraphics;
+import cz.cvut.fit.niadp.mvcgame.bridge.IGameGraphics;
+import cz.cvut.fit.niadp.mvcgame.bridge.JavaFxGraphics;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class MvcGameJavaFxLauncher extends Application {
         stage.setScene( theScene );
         Canvas canvas = new Canvas( winWidth, winHeigth );
         root.getChildren().add( canvas );
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+        IGameGraphics gameGraphics = new GameGraphics(new JavaFxGraphics(canvas.getGraphicsContext2D()));
         ArrayList<String> pressedKeysCodes = new ArrayList<>();
         theScene.setOnKeyPressed(
                 e -> {
@@ -49,7 +51,7 @@ public class MvcGameJavaFxLauncher extends Application {
                 }
         );
         // the game-loop
-        theMvcGame.setGraphicsContext(gc);
+        theMvcGame.setGraphicsContext(gameGraphics);
         new AnimationTimer() {
             public void handle(long currentNanoTime) {
                 theMvcGame.processPressedKeys(pressedKeysCodes);
