@@ -3,9 +3,8 @@ package cz.cvut.fit.niadp.mvcgame.model;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.GameObjectsFactoryA;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
 import cz.cvut.fit.niadp.mvcgame.command.AbstractGameCommand;
-import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.LifetimeLimitedGameObject;
 import cz.cvut.fit.niadp.mvcgame.observer.Aspect;
-import cz.cvut.fit.niadp.mvcgame.observer.IObservable;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
 
 import java.util.*;
@@ -46,6 +45,7 @@ public class GameModel implements IGameModel {
     }
 
     public void update() {
+        this.checkLifeTimeLimitedGameObjects();
         this.executeCommands();
         this.moveMissiles();
     }
@@ -110,12 +110,12 @@ public class GameModel implements IGameModel {
     }
 
     public void cannonShoot() {
-        List<AbsMissile> missiles = this.cannon.shoot();
-        this.missiles.addAll(missiles);
+        List<AbsMissile> newMissiles = this.cannon.shoot();
+        this.missiles.addAll(newMissiles);
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
 
         // play sound only once even if multiple missiles are shot
-        missiles.get(0).acceptVisitor(soundMaker); // soundMaker.visitMissile(missiles.get(0));
+        newMissiles.get(0).acceptVisitor(soundMaker); // soundMaker.visitMissile(missiles.get(0));
     }
 
     public void toggleShootingMode() {
@@ -172,14 +172,13 @@ public class GameModel implements IGameModel {
 
     private void moveMissiles() {
         this.missiles.forEach(AbsMissile::move);
-        this.destroyMissiles();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
     }
 
-    private void destroyMissiles() {
-        this.missiles.removeAll(
-                this.missiles.stream().filter(missile -> missile.getPosition().getX() > MvcGameConfig.MAX_X).toList()
-        );
+    private void checkLifeTimeLimitedGameObjects() {
+        List<AbsMissile> toDestroy = this.missiles.stream().filter(LifetimeLimitedGameObject::shouldBeDestroyed).toList();
+        this.missiles.removeAll(toDestroy);
+        toDestroy.forEach(m -> m = null);
     }
 
     public List<GameObject> getGameObjects() {

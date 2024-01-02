@@ -59,7 +59,11 @@ public class CannonA extends AbsCannon {
 
     @Override
     public void primitiveShoot() {
-        this.shootingBatch.add(this.gameObjectsFactory.createMissile(this.angle, this.power));
+        this.shootingBatch.add(this.gameObjectsFactory.createMissile(
+                this.angle,
+                this.power,
+                MvcGameConfig.DEFAULT_MISSILE_LIFETIME
+        ));
     }
 
     @Override

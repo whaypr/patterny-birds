@@ -16,6 +16,7 @@ public class MvcGameConfig {
     public static final double GRAVITY = 9.81;
     public static final int MAX_POWER = 50;
     public static final int MIN_POWER = 1;
+    public static final long DEFAULT_MISSILE_LIFETIME = 5_000;
     public static final int DYNAMIC_SHOOTING_MODE_ADD_STEP = 1;
     public static final int DYNAMIC_SHOOTING_MODE_REMOVE_STEP = 1;
     public static final int DYNAMIC_SHOOTING_MODE_DEFAULT_NUMBER_OF_MISSILES = 3;

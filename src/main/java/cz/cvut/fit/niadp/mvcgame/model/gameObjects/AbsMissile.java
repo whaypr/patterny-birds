@@ -8,8 +8,8 @@ public abstract class AbsMissile extends LifetimeLimitedGameObject {
     private final double initAngle;
     private final int initVelocity;
 
-    protected AbsMissile(Position initPosition, double initAngle, int initVelocity) {
-        super(initPosition);
+    protected AbsMissile(Position initPosition, double initAngle, int initVelocity, long lifeTime) {
+        super(initPosition, lifeTime);
         this.initAngle = initAngle;
         this.initVelocity = initVelocity;
     }

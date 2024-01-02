@@ -5,6 +5,6 @@ import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
 
 public interface IGameObjectsFactory {
     AbsCannon createCannon();
-    AbsMissile createMissile(double initAngle, int initVelocity);
     // TODO enemies, gameInfo
+    AbsMissile createMissile(double initAngle, int initVelocity, long lifeTime);
 }

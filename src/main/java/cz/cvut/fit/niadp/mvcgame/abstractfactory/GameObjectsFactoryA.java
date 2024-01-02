@@ -35,11 +35,12 @@ public class GameObjectsFactoryA implements IGameObjectsFactory {
     }
 
     @Override
-    public MissileA createMissile(double initAngle, int initVelocity) {
+    public MissileA createMissile(double initAngle, int initVelocity, long lifeTime) {
         return new MissileA(
                 new Position(this.model.getCannonPosition().getX(), this.model.getCannonPosition().getY()),
                 initAngle,
                 initVelocity,
+                lifeTime,
                 this.model.getMovingStrategy()
         );
     }
