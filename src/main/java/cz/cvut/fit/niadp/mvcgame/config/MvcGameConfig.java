@@ -2,6 +2,8 @@ package cz.cvut.fit.niadp.mvcgame.config;
 
 public class MvcGameConfig {
 
+    /* CONSTANTS */
+    public static final String GAME_TITLE = "The NI-ADP MvcGame";
     public static final int MAX_X = 1920;
     public static final int MAX_Y = 1080;
     public static final int MOVE_STEP = 10;
@@ -14,10 +16,11 @@ public class MvcGameConfig {
     public static final double GRAVITY = 9.81;
     public static final int MAX_POWER = 50;
     public static final int MIN_POWER = 1;
+    public static final int DYNAMIC_SHOOTING_MODE_ADD_STEP = 1;
+    public static final int DYNAMIC_SHOOTING_MODE_REMOVE_STEP = 1;
     public static final int DYNAMIC_SHOOTING_MODE_DEFAULT_NUMBER_OF_MISSILES = 3;
 
-    public static final String GAME_TITLE = "The NI-ADP MvcGame";
-
+    /* CONTROLS */
     public static final String UP_KEY = "UP";
     public static final String DOWN_KEY = "DOWN";
     public static final String EXIT_KEY = "ESCAPE";
@@ -32,6 +35,7 @@ public class MvcGameConfig {
     public static final String SHOOTING_MODE_KEY = "N";
     public static final String UNDO_LAST_COMMAND_KEY = "R";
 
+    /* RESOURCES */
     public static final String CANNON_IMAGE_RESOURCE = "images/cannon.png";
     public static final String CANNON_MOVE_SOUND_RESOURCE = "sounds/canonMove.wav";
     public static final String MISSILE_IMAGE_RESOURCE = "images/missile.png";

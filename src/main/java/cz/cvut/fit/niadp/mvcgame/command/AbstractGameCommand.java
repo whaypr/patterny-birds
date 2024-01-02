@@ -7,6 +7,10 @@ public abstract class AbstractGameCommand {
     protected IGameModel subject;
     private Object memento;
 
+    public AbstractGameCommand(IGameModel model) {
+        this.subject = model;
+    }
+
     protected abstract void execute();
 
     public void doExecute() {

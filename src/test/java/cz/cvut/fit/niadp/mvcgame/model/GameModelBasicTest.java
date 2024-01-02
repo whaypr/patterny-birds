@@ -1,6 +1,6 @@
 package cz.cvut.fit.niadp.mvcgame.model;
 
-import cz.cvut.fit.niadp.mvcgame.command.MoveCannonUpCommand;
+import cz.cvut.fit.niadp.mvcgame.command.CannonMoveUpCommand;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 import org.junit.Assert;
@@ -12,7 +12,7 @@ public class GameModelBasicTest {
     public void undoLastCommandTest() {
         IGameModel model = new GameModel(new GameObjectsSoundMaker());
         int positionBeforeUndoY = model.getCannonPosition().getY();
-        model.registerCommand(new MoveCannonUpCommand(model));
+        model.registerCommand(new CannonMoveUpCommand(model));
         model.update();
         Assert.assertEquals(positionBeforeUndoY - MvcGameConfig.MOVE_STEP, model.getCannonPosition().getY());
         model.undoLastCommand();

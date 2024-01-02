@@ -2,12 +2,11 @@ package cz.cvut.fit.niadp.mvcgame.command;
 
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 
-public class MoveCannonUpCommand extends AbstractGameCommand {
+public class CannonMoveUpCommand extends AbstractGameCommand {
 
-    public MoveCannonUpCommand(IGameModel model) {
-        this.subject = model;
+    public CannonMoveUpCommand(IGameModel model) {
+        super(model);
     }
-
 
     @Override
     protected void execute() {
