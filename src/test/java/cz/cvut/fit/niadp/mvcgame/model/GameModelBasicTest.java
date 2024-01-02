@@ -2,6 +2,7 @@ package cz.cvut.fit.niadp.mvcgame.model;
 
 import cz.cvut.fit.niadp.mvcgame.command.MoveCannonUpCommand;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -9,7 +10,7 @@ public class GameModelBasicTest {
 
     @Test
     public void undoLastCommandTest() {
-        IGameModel model = new GameModel();
+        IGameModel model = new GameModel(new GameObjectsSoundMaker());
         int positionBeforeUndoY = model.getCannonPosition().getY();
         model.registerCommand(new MoveCannonUpCommand(model));
         model.update();

@@ -1,19 +1,19 @@
 package cz.cvut.fit.niadp.mvcgame.abstractfactory;
 
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
-import cz.cvut.fit.niadp.mvcgame.model.GameModel;
+import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.CannonA;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.MissileA;
 
 public class GameObjectsFactoryA implements IGameObjectsFactory {
-    private static GameModel model;
+    private static IGameModel model;
     // volatile so that double check lock would work correctly.
     private static volatile GameObjectsFactoryA instance;
 
     private GameObjectsFactoryA() {}
 
-    public static void createInstance(GameModel m) {
+    public static void createInstance(IGameModel m) {
         model = m;
 
         synchronized(GameObjectsFactoryA.class) {

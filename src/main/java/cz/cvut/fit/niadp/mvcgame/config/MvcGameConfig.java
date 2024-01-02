@@ -30,8 +30,7 @@ public class MvcGameConfig {
     public static final String DYNAMIC_SHOOTING_MODE_ADD_MISSILE_KEY = "O";
     public static final String DYNAMIC_SHOOTING_MODE_REMOVE_MISSILE_KEY = "P";
     public static final String SHOOTING_MODE_KEY = "N";
-    public static final String STORE_SNAPSHOT_KEY = "S";
-    public static final String RESTORE_SNAPSHOT_KEY = "R";
+    public static final String UNDO_LAST_COMMAND_KEY = "R";
 
     public static final String CANNON_IMAGE_RESOURCE = "images/cannon.png";
     public static final String CANNON_MOVE_SOUND_RESOURCE = "sounds/canonMove.wav";

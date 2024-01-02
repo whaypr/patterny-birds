@@ -1,15 +1,16 @@
 package cz.cvut.fit.niadp.mvcgame.controller;
 
-import cz.cvut.fit.niadp.mvcgame.memento.CareTaker;
-import cz.cvut.fit.niadp.mvcgame.model.GameModel;
+import cz.cvut.fit.niadp.mvcgame.command.MoveCannonDownCommand;
+import cz.cvut.fit.niadp.mvcgame.command.MoveCannonUpCommand;
+import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 
 import java.util.List;
 
 public class GameController {
 
-    private final GameModel model;
-    public GameController(GameModel model) {
+    private final IGameModel model;
+    public GameController(IGameModel model) {
         this.model = model;
     }
 
@@ -17,10 +18,10 @@ public class GameController {
         for(String code : pressedKeysCodes) {
             switch(code) {
                 case MvcGameConfig.UP_KEY:
-                    this.model.moveCannonUp();
+                    this.model.registerCommand(new MoveCannonUpCommand(this.model));
                     break;
                 case MvcGameConfig.DOWN_KEY:
-                    this.model.moveCannonDown();
+                    this.model.registerCommand(new MoveCannonDownCommand(this.model));
                     break;
                 case MvcGameConfig.SHOOT_KEY:
                     this.model.cannonShoot();
@@ -49,11 +50,8 @@ public class GameController {
                 case MvcGameConfig.SHOOTING_MODE_KEY:
                     this.model.toggleShootingMode();
                     break;
-                case MvcGameConfig.STORE_SNAPSHOT_KEY:
-                    CareTaker.getInstance().createMemento();
-                    break;
-                case MvcGameConfig.RESTORE_SNAPSHOT_KEY:
-                    CareTaker.getInstance().setMemento();
+                case MvcGameConfig.UNDO_LAST_COMMAND_KEY:
+                    this.model.undoLastCommand();
                     break;
                 case MvcGameConfig.EXIT_KEY:
                     System.exit(0);

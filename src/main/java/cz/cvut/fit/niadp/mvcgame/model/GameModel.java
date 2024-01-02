@@ -2,32 +2,36 @@ package cz.cvut.fit.niadp.mvcgame.model;
 
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.GameObjectsFactoryA;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
+import cz.cvut.fit.niadp.mvcgame.command.AbstractGameCommand;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.observer.Aspect;
 import cz.cvut.fit.niadp.mvcgame.observer.IObservable;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+
+import java.util.*;
+
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
 import cz.cvut.fit.niadp.mvcgame.strategy.*;
 import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Stream;
 
-public class GameModel implements IObservable {
+public class GameModel implements IGameModel {
 
-    private final AbsCannon cannon;
+    private final GameObjectsSoundMaker soundMaker;
+
     private final Map<Aspect, Set<IObserver>> observers;
     private IGameObjectsFactory gameObjectsFactory;
+
+    private final AbsCannon cannon;
     private final List<AbsMissile> missiles;
     private IMovingStrategy movingStrategy;
-    private final GameObjectsSoundMaker soundMaker;
+
+    private final Queue<AbstractGameCommand> unexecutedCommands;
+    private final Stack<AbstractGameCommand> executedCommands;
 
     public GameModel(GameObjectsSoundMaker soundMaker) {
         this.observers = new HashMap<>();
@@ -37,26 +41,40 @@ public class GameModel implements IObservable {
         this.missiles = new ArrayList<>();
         this.movingStrategy = new SimpleMovingStrategy();
         this.soundMaker = soundMaker;
+        this.unexecutedCommands = new LinkedBlockingQueue<>();
+        this.executedCommands = new Stack<>();
     }
 
     public void update() {
+        this.executeCommands();
         this.moveMissiles();
     }
 
-    private void moveMissiles() {
-        this.missiles.forEach(AbsMissile::move);
-        this.destroyMissiles();
+
+    /* COMMANDS */
+
+    private void executeCommands() {
+        while (!this.unexecutedCommands.isEmpty()) {
+            AbstractGameCommand command = this.unexecutedCommands.poll();
+            command.doExecute();
+            executedCommands.add(command);
+        }
+    }
+
+    @Override
+    public void registerCommand(AbstractGameCommand command) {
+        this.unexecutedCommands.add(command);
+    }
+
+    @Override
+    public void undoLastCommand() {
+        if (this.executedCommands.empty())
+            return;
+        this.executedCommands.pop().unExecute();
+        // TODO add some way to notify only the correct aspect
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-    }
-
-    private void destroyMissiles() {
-        this.missiles.removeAll(
-            this.missiles.stream().filter(missile -> missile.getPosition().getX() > MvcGameConfig.MAX_X).toList()
-        );
-    }
-
-    public Position getCannonPosition() {
-        return this.cannon.getPosition();
+        this.notifyObservers(Aspect.OBJECT_ANGLES);
+        this.notifyObservers(Aspect.STATUS);
     }
 
     public void moveCannonUp() {
@@ -69,15 +87,6 @@ public class GameModel implements IObservable {
         this.cannon.moveDown();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
         cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
-    }
-
-    public void cannonShoot() {
-        List<AbsMissile> missiles = this.cannon.shoot();
-        this.missiles.addAll(missiles);
-        this.notifyObservers(Aspect.OBJECT_POSITIONS);
-
-        // play sound only once even if multiple missiles are shot
-        missiles.get(0).acceptVisitor(soundMaker); // soundMaker.visitMissile(missiles.get(0));
     }
 
     public void aimCannonUp() {
@@ -100,6 +109,46 @@ public class GameModel implements IObservable {
         this.notifyObservers(Aspect.STATUS);
     }
 
+    public void cannonShoot() {
+        List<AbsMissile> missiles = this.cannon.shoot();
+        this.missiles.addAll(missiles);
+        this.notifyObservers(Aspect.OBJECT_POSITIONS);
+
+        // play sound only once even if multiple missiles are shot
+        missiles.get(0).acceptVisitor(soundMaker); // soundMaker.visitMissile(missiles.get(0));
+    }
+
+    public void toggleShootingMode() {
+        this.cannon.toggleShootingMode();
+        this.notifyObservers(Aspect.STATUS);
+    }
+
+    public void toggleMovingStrategy() {
+        if (this.movingStrategy instanceof SimpleMovingStrategy) {
+            this.movingStrategy = new RealisticMovingStrategy();
+        }
+        else if (this.movingStrategy instanceof RealisticMovingStrategy) {
+            this.movingStrategy = new SinusoidalMovingStrategy();
+        }
+        else if (this.movingStrategy instanceof SinusoidalMovingStrategy) {
+            this.movingStrategy = new CircularMovingStrategy();
+        }
+        else if (this.movingStrategy instanceof CircularMovingStrategy) {
+            this.movingStrategy = new SimpleMovingStrategy();
+        }
+    }
+
+    public void addMissilesForDynamicShootingMode(int toAdd) {
+        cannon.addMissilesForDynamicShootingMode(toAdd);
+    }
+
+    public void removeMissilesForDynamicShootingMode(int toRemove) {
+        cannon.removeMissilesForDynamicShootingMode(toRemove);
+    }
+
+
+    /* OBSERVER */
+
     @Override
     public void registerObserver(IObserver observer, Aspect aspect) {
         if (!this.observers.containsKey(aspect))
@@ -118,45 +167,39 @@ public class GameModel implements IObservable {
         this.observers.get(aspect).forEach(o -> o.update(aspect));
     }
 
-    public List<AbsMissile> getMissiles() {
-        return this.missiles;
+
+    /* HELPERS, MODEL INFO */
+
+    private void moveMissiles() {
+        this.missiles.forEach(AbsMissile::move);
+        this.destroyMissiles();
+        this.notifyObservers(Aspect.OBJECT_POSITIONS);
+    }
+
+    private void destroyMissiles() {
+        this.missiles.removeAll(
+                this.missiles.stream().filter(missile -> missile.getPosition().getX() > MvcGameConfig.MAX_X).toList()
+        );
     }
 
     public List<GameObject> getGameObjects() {
         return Stream.concat(Stream.of(this.cannon), this.missiles.stream()).toList();
     }
 
+    public Position getCannonPosition() {
+        return this.cannon.getPosition();
+    }
+
+    public List<AbsMissile> getMissiles() {
+        return this.missiles;
+    }
+
     public IMovingStrategy getMovingStrategy() {
         return this.movingStrategy;
     }
 
-    public void toggleMovingStrategy() {
-        if (this.movingStrategy instanceof SimpleMovingStrategy) {
-            this.movingStrategy = new RealisticMovingStrategy();
-        }
-        else if (this.movingStrategy instanceof RealisticMovingStrategy) {
-            this.movingStrategy = new SinusoidalMovingStrategy();
-        }
-        else if (this.movingStrategy instanceof SinusoidalMovingStrategy) {
-            this.movingStrategy = new CircularMovingStrategy();
-        }
-        else if (this.movingStrategy instanceof CircularMovingStrategy) {
-            this.movingStrategy = new SimpleMovingStrategy();
-        }
-    }
 
-    public void toggleShootingMode() {
-        this.cannon.toggleShootingMode();
-        this.notifyObservers(Aspect.STATUS);
-    }
-
-    public void addMissilesForDynamicShootingMode(int toAdd) {
-        cannon.addMissilesForDynamicShootingMode(toAdd);
-    }
-
-    public void removeMissilesForDynamicShootingMode(int toRemove) {
-        cannon.removeMissilesForDynamicShootingMode(toRemove);
-    }
+    /* MEMENTO */
 
     private static class Memento {
         private int cannonPositionX;
