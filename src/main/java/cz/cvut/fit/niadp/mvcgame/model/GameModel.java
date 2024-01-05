@@ -3,15 +3,13 @@ package cz.cvut.fit.niadp.mvcgame.model;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.GameObjectsFactoryA;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
 import cz.cvut.fit.niadp.mvcgame.command.AbstractGameCommand;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.LifetimeLimitedGameObject;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.*;
 import cz.cvut.fit.niadp.mvcgame.observer.Aspect;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
 
 import java.util.*;
 
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
+import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 import cz.cvut.fit.niadp.mvcgame.strategy.*;
 import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 
@@ -32,18 +30,20 @@ public class GameModel implements IGameModel {
     private final Queue<AbstractGameCommand> unexecutedCommands;
     private final Stack<AbstractGameCommand> executedCommands;
 
-    public GameModel(GameObjectsSoundMaker soundMaker) {
+    public GameModel() {
         this.observers = new HashMap<>();
         GameObjectsFactoryA.createInstance(this);
         this.gameObjectsFactory = GameObjectsFactoryA.getInstance();
         this.cannon = this.gameObjectsFactory.createCannon();
         this.missiles = new ArrayList<>();
         this.movingStrategy = new SimpleMovingStrategy();
-        this.soundMaker = soundMaker;
         this.unexecutedCommands = new LinkedBlockingQueue<>();
         this.executedCommands = new Stack<>();
+
+        this.soundMaker = new GameObjectsSoundMaker();
     }
 
+    @Override
     public void update() {
         this.checkLifeTimeLimitedGameObjects();
         this.executeCommands();
@@ -77,40 +77,48 @@ public class GameModel implements IGameModel {
         this.notifyObservers(Aspect.STATUS);
     }
 
+    @Override
     public void moveCannonUp() {
         this.cannon.moveUp();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
         cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
     }
 
+    @Override
     public void moveCannonDown() {
         this.cannon.moveDown();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
         cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
     }
 
+    @Override
     public void aimCannonUp() {
         this.cannon.aimUp();
         this.notifyObservers(Aspect.OBJECT_ANGLES);
     }
 
+    @Override
     public void aimCannonDown() {
         this.cannon.aimDown();
         this.notifyObservers(Aspect.OBJECT_ANGLES);
     }
 
+    @Override
     public void cannonPowerUp() {
         this.cannon.powerUp();
         this.notifyObservers(Aspect.STATUS);
     }
 
+    @Override
     public void cannonPowerDown() {
         this.cannon.powerDown();
         this.notifyObservers(Aspect.STATUS);
     }
 
+    @Override
     public void cannonShoot() {
         List<AbsMissile> newMissiles = this.cannon.shoot();
+
         this.missiles.addAll(newMissiles);
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
 
@@ -118,11 +126,13 @@ public class GameModel implements IGameModel {
         newMissiles.get(0).acceptVisitor(soundMaker); // soundMaker.visitMissile(missiles.get(0));
     }
 
+    @Override
     public void toggleShootingMode() {
         this.cannon.toggleShootingMode();
         this.notifyObservers(Aspect.STATUS);
     }
 
+    @Override
     public void toggleMovingStrategy() {
         if (this.movingStrategy instanceof SimpleMovingStrategy) {
             this.movingStrategy = new RealisticMovingStrategy();
@@ -138,10 +148,12 @@ public class GameModel implements IGameModel {
         }
     }
 
+    @Override
     public void addMissilesForDynamicShootingMode(int toAdd) {
         cannon.addMissilesForDynamicShootingMode(toAdd);
     }
 
+    @Override
     public void removeMissilesForDynamicShootingMode(int toRemove) {
         cannon.removeMissilesForDynamicShootingMode(toRemove);
     }
@@ -185,15 +197,18 @@ public class GameModel implements IGameModel {
         return Stream.concat(Stream.of(this.cannon), this.missiles.stream()).toList();
     }
 
+    @Override
     public Position getCannonPosition() {
         return this.cannon.getPosition();
     }
 
+    @Override
     public List<AbsMissile> getMissiles() {
         return this.missiles;
     }
 
-    public IMovingStrategy getMovingStrategy() {
+    @Override
+    public IMovingStrategy getMissileMovingStrategy() {
         return this.movingStrategy;
     }
 
@@ -206,6 +221,7 @@ public class GameModel implements IGameModel {
         // game model snapshot (enemies, gameInfo, strategy, state)
     }
 
+    @Override
     public Object createMemento() {
         Memento gameModelSnapshot = new Memento();
         gameModelSnapshot.cannonPositionX = this.getCannonPosition().getX();
@@ -213,6 +229,7 @@ public class GameModel implements IGameModel {
         return gameModelSnapshot;
     }
 
+    @Override
     public void setMemento(Object memento) {
         Memento gameModelSnapshot = (Memento) memento;
         this.cannon.getPosition().setX(gameModelSnapshot.cannonPositionX);

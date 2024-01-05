@@ -9,7 +9,7 @@ public class GameObjectsFactoryATest {
 
     @Test
     public void singletonTest() {
-        GameObjectsFactoryA.createInstance(new GameModel(new GameObjectsSoundMaker()));
+        GameObjectsFactoryA.createInstance(new GameModel());
         IGameObjectsFactory instance1 = GameObjectsFactoryA.getInstance();
         IGameObjectsFactory instance2 = GameObjectsFactoryA.getInstance();
         Assert.assertEquals(instance1.hashCode(), instance2.hashCode());

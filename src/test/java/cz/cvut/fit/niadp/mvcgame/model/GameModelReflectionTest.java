@@ -17,7 +17,7 @@ public class GameModelReflectionTest {
 
     @Test
     public void moveMissilesTest() throws NoSuchMethodException {
-        GameModel model = new GameModel(new GameObjectsSoundMaker());
+        GameModel model = new GameModel();
         Method method = model.getClass().getDeclaredMethod(MOVE_MISSILES_METHOD_NAME);
         method.setAccessible(true);
         IntStream.rangeClosed(ITERATION_START_CONST, MISSILE_COUNT).forEach(i->model.cannonShoot());

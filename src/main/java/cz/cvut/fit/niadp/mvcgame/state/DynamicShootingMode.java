@@ -13,7 +13,8 @@ public class DynamicShootingMode implements IShootingMode {
 
     @Override
     public String getName() {
-        return DynamicShootingMode.class.getSimpleName();
+        return DynamicShootingMode.class.getSimpleName()
+                .replace("ShootingMode", "");
     }
 
     @Override

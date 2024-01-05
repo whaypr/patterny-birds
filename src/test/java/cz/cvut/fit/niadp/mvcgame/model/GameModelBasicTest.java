@@ -10,7 +10,7 @@ public class GameModelBasicTest {
 
     @Test
     public void undoLastCommandTest() {
-        IGameModel model = new GameModel(new GameObjectsSoundMaker());
+        IGameModel model = new GameModel();
         int positionBeforeUndoY = model.getCannonPosition().getY();
         model.registerCommand(new CannonMoveUpCommand(model));
         model.update();

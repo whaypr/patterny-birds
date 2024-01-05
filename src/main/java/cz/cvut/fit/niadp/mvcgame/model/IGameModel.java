@@ -4,6 +4,7 @@ import cz.cvut.fit.niadp.mvcgame.command.AbstractGameCommand;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
 import cz.cvut.fit.niadp.mvcgame.observer.IObservable;
+import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 import cz.cvut.fit.niadp.mvcgame.strategy.IMovingStrategy;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public interface IGameModel extends IObservable {
     List<GameObject> getGameObjects();
     Position getCannonPosition();
     List<AbsMissile> getMissiles();
-    IMovingStrategy getMovingStrategy();
+    IMovingStrategy getMissileMovingStrategy();
 
     /* MEMENTO */
     Object createMemento();

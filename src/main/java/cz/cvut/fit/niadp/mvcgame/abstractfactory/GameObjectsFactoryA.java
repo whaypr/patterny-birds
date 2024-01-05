@@ -3,22 +3,24 @@ package cz.cvut.fit.niadp.mvcgame.abstractfactory;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsGameInfo;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.CannonA;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameInfo;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.MissileA;
 
 public class GameObjectsFactoryA implements IGameObjectsFactory {
-    private static IGameModel model;
-    // volatile so that double check lock would work correctly.
-    private static volatile GameObjectsFactoryA instance;
+    private final IGameModel model;
 
-    private GameObjectsFactoryA() {}
+    private static GameObjectsFactoryA instance;
 
-    public static void createInstance(IGameModel m) {
-        model = m;
+    private GameObjectsFactoryA(IGameModel model) {
+        this.model = model;
+    }
 
+    public static void createInstance(IGameModel model) {
         synchronized(GameObjectsFactoryA.class) {
             if (instance == null) {
-                instance = new GameObjectsFactoryA();
+                instance = new GameObjectsFactoryA(model);
             }
         }
     }
@@ -41,7 +43,7 @@ public class GameObjectsFactoryA implements IGameObjectsFactory {
                 initAngle,
                 initVelocity,
                 lifeTime,
-                this.model.getMovingStrategy()
+                this.model.getMissileMovingStrategy()
         );
     }
 }

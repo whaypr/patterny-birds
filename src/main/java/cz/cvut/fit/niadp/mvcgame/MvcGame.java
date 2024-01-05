@@ -19,8 +19,7 @@ public class MvcGame {
     private GameController controller;
 
     public void init() {
-        GameObjectsSoundMaker soundMaker = new GameObjectsSoundMaker();
-        this.model = new GameModelProxy(new GameModel(soundMaker));
+        this.model = new GameModelProxy(new GameModel());
         this.view = new GameView(model);
         this.controller = this.view.getController();
     }

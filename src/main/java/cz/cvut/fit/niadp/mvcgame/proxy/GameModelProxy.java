@@ -7,6 +7,7 @@ import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
 import cz.cvut.fit.niadp.mvcgame.observer.Aspect;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
+import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 import cz.cvut.fit.niadp.mvcgame.strategy.IMovingStrategy;
 
 import java.util.List;
@@ -120,8 +121,8 @@ public class GameModelProxy implements IGameModel {
     }
 
     @Override
-    public IMovingStrategy getMovingStrategy() {
-        return this.subject.getMovingStrategy();
+    public IMovingStrategy getMissileMovingStrategy() {
+        return this.subject.getMissileMovingStrategy();
     }
 
     @Override

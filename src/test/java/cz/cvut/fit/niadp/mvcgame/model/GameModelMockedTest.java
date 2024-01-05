@@ -25,7 +25,8 @@ public class GameModelMockedTest {
     @Test
     public void createMissile() {
         this.generalMockSetup();
-        IGameObjectsFactory gameObjectsFactory = new GameObjectsFactoryA(this.model);
+        GameObjectsFactoryA.createInstance(this.model);
+        IGameObjectsFactory gameObjectsFactory = GameObjectsFactoryA.getInstance();
         AbsMissile missile = gameObjectsFactory.createMissile(INIT_TEST_ANGLE, INIT_TEST_VELOCITY, INIT_TEST_MISSILE_LIFETIME);
         Assert.assertEquals(CANNON_TEST_POSITION_X, missile.getPosition().getX());
         Assert.assertEquals(CANNON_TEST_POSITION_Y, missile.getPosition().getY());

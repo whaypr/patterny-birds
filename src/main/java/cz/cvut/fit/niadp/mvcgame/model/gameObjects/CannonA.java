@@ -13,8 +13,8 @@ import java.util.List;
 
 public class CannonA extends AbsCannon {
 
-    private IGameObjectsFactory gameObjectsFactory;
-    private List<AbsMissile> shootingBatch;
+    private final IGameObjectsFactory gameObjectsFactory;
+    private final List<AbsMissile> shootingBatch;
 
     public CannonA(Position initPosition, IGameObjectsFactory gameObjectsFactory) {
         this.position = initPosition;
@@ -39,12 +39,12 @@ public class CannonA extends AbsCannon {
 
     @Override
     public void aimUp() {
-        this.angle -= MvcGameConfig.ANGLE_STEP;
+        this.angle = (this.angle - MvcGameConfig.ANGLE_STEP) % (2 * Math.PI);
     }
 
     @Override
     public void aimDown() {
-        this.angle += MvcGameConfig.ANGLE_STEP;
+        this.angle = (this.angle + MvcGameConfig.ANGLE_STEP - 2 * Math.PI) % (2 * Math.PI);
     }
 
     @Override
