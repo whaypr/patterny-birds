@@ -19,6 +19,18 @@ public abstract class AbsCannon extends GameObject {
     protected int power;
     protected double angle;
 
+    public int getPower() {
+        return power;
+    }
+
+    public double getAngle() {
+        return -angle * 180 / Math.PI;
+    }
+
+    public IShootingMode getShootingMode() {
+        return shootingMode;
+    }
+
     public abstract void moveUp();
 
     public abstract void moveDown();
@@ -38,4 +50,5 @@ public abstract class AbsCannon extends GameObject {
     public abstract void toggleShootingMode();
     public abstract void addMissilesForDynamicShootingMode(int toAdd);
     public abstract void removeMissilesForDynamicShootingMode(int toRemove);
+    public abstract int getDynamicShootingModeNumberOfMissiles();
 }

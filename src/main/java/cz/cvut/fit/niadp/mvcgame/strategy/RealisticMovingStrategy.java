@@ -3,8 +3,16 @@ package cz.cvut.fit.niadp.mvcgame.strategy;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.Vector;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
+import cz.cvut.fit.niadp.mvcgame.state.SingleShootingMode;
 
 public class RealisticMovingStrategy implements IMovingStrategy {
+
+    @Override
+    public String getName() {
+        return RealisticMovingStrategy.class.getSimpleName()
+                .replace("MovingStrategy", "");
+    }
+
     @Override
     public void updatePosition(AbsMissile missile) {
         int initVelocity = missile.getInitVelocity();

@@ -46,4 +46,9 @@ public class GameObjectsFactoryA implements IGameObjectsFactory {
                 this.model.getMissileMovingStrategy()
         );
     }
+
+    @Override
+    public AbsGameInfo createGameInfo() {
+        return new GameInfo(this.model);
+    }
 }

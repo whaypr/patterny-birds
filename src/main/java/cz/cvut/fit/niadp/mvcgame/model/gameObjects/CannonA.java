@@ -93,4 +93,9 @@ public class CannonA extends AbsCannon {
     public void removeMissilesForDynamicShootingMode(int toRemove) {
         DYNAMIC_SHOOTING_MODE.removeMissiles(toRemove);
     }
+
+    @Override
+    public int getDynamicShootingModeNumberOfMissiles() {
+        return DYNAMIC_SHOOTING_MODE.getNumberOfMissiles();
+    }
 }

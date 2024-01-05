@@ -11,6 +11,10 @@ public class DynamicShootingMode implements IShootingMode {
         this.numberOfMissiles = numberOfMissiles;
     }
 
+    public int getNumberOfMissiles() {
+        return numberOfMissiles;
+    }
+
     @Override
     public String getName() {
         return DynamicShootingMode.class.getSimpleName()

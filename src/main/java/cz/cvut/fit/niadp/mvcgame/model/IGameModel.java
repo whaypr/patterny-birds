@@ -28,8 +28,15 @@ public interface IGameModel extends IObservable {
     void removeMissilesForDynamicShootingMode(int toRemove);
 
     /* INFO */
+    int getScore();
+    int getNumberOfMissilesShot();
+    int getNumberOfEnemiesLeft();
     List<GameObject> getGameObjects();
     Position getCannonPosition();
+    double getCannonAngle();
+    int getCannonPower();
+    IShootingMode getCannonShootingMode();
+    int getCannonDynamicShootingModeNumberOfMissiles();
     List<AbsMissile> getMissiles();
     IMovingStrategy getMissileMovingStrategy();
 

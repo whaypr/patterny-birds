@@ -4,11 +4,36 @@ import cz.cvut.fit.niadp.mvcgame.bridge.GameGraphics;
 import cz.cvut.fit.niadp.mvcgame.bridge.IGameGraphics;
 import cz.cvut.fit.niadp.mvcgame.bridge.NoGraphics;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsGameInfo;
 
 public class GameObjectsRender implements IGameObjectsVisitor {
     private IGameGraphics gameGraphics;
+
+    private static final Position borderTopLeft = new Position(10, 10);
+    private static final Position borderBottomRight = new Position(MvcGameConfig.MAX_X - 10, 100);
+    private static final int columnsXOffset = 320;
+    private static final int textYOffset = 25;
+    private void printColumn(int columnNumber, String top, String middle, String bottom) {
+        Position columnTopLeft = new Position(
+                borderTopLeft.getX() + columnNumber*columnsXOffset, borderTopLeft.getY()
+        );
+
+        this.gameGraphics.drawText(
+                top,
+                new Position(columnTopLeft.getX(), columnTopLeft.getY() + textYOffset)
+        );
+        this.gameGraphics.drawText(
+                middle,
+                new Position(columnTopLeft.getX(), columnTopLeft.getY() + 2*textYOffset)
+        );
+        this.gameGraphics.drawText(
+                bottom,
+                new Position(columnTopLeft.getX(), columnTopLeft.getY() + 3*textYOffset)
+        );
+    }
 
     public GameObjectsRender() {
         this.gameGraphics = new GameGraphics(NoGraphics.getInstance());
@@ -26,5 +51,28 @@ public class GameObjectsRender implements IGameObjectsVisitor {
     @Override
     public void visitMissile(AbsMissile missile) {
         this.gameGraphics.drawImage((MvcGameConfig.MISSILE_IMAGE_RESOURCE), missile.getPosition());
+    }
+
+    @Override
+    public void visitGameInfo(AbsGameInfo gameInfo) {
+        this.gameGraphics.drawRectangle(borderTopLeft, borderBottomRight);
+        printColumn(
+                1,
+                "Cannon angle: " + gameInfo.cannonAngle(),
+                "Cannon power: " + gameInfo.cannonPower(),
+                "Cannon shooting state: " + gameInfo.cannonShootingState().getName()
+        );
+        printColumn(
+                2,
+                "Missile moving strat: " + gameInfo.missilesMovingStrategy().getName(),
+                "Dynamic mode missiles: " + gameInfo.cannonDynamicShootingModeNumberOfMissiles(),
+                ""
+        );
+        printColumn(
+                3,
+                "Score: " + gameInfo.score(),
+                "Missiles shot: " + gameInfo.numberOfMissilesShot(),
+                "Enemies left: " + gameInfo.enemiesLeft();
+        );
     }
 }

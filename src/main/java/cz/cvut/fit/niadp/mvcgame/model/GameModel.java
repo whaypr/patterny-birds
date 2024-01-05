@@ -21,26 +21,36 @@ public class GameModel implements IGameModel {
     private final GameObjectsSoundMaker soundMaker;
 
     private final Map<Aspect, Set<IObserver>> observers;
-    private IGameObjectsFactory gameObjectsFactory;
+    private final IGameObjectsFactory gameObjectsFactory;
 
     private final AbsCannon cannon;
     private final List<AbsMissile> missiles;
     private IMovingStrategy movingStrategy;
+
+    private int score;
+    private int numberOfMissilesShot;
+
+    private AbsGameInfo gameInfo;
 
     private final Queue<AbstractGameCommand> unexecutedCommands;
     private final Stack<AbstractGameCommand> executedCommands;
 
     public GameModel() {
         this.observers = new HashMap<>();
-        GameObjectsFactoryA.createInstance(this);
-        this.gameObjectsFactory = GameObjectsFactoryA.getInstance();
-        this.cannon = this.gameObjectsFactory.createCannon();
         this.missiles = new ArrayList<>();
-        this.movingStrategy = new SimpleMovingStrategy();
         this.unexecutedCommands = new LinkedBlockingQueue<>();
         this.executedCommands = new Stack<>();
 
         this.soundMaker = new GameObjectsSoundMaker();
+        this.movingStrategy = new SimpleMovingStrategy();
+
+        GameObjectsFactoryA.createInstance(this);
+        this.gameObjectsFactory = GameObjectsFactoryA.getInstance();
+        this.cannon = this.gameObjectsFactory.createCannon();
+        this.gameInfo = this.gameObjectsFactory.createGameInfo();
+
+        this.score = 0;
+        this.numberOfMissilesShot = 0;
     }
 
     @Override
@@ -120,6 +130,7 @@ public class GameModel implements IGameModel {
         List<AbsMissile> newMissiles = this.cannon.shoot();
 
         this.missiles.addAll(newMissiles);
+        this.numberOfMissilesShot += newMissiles.size();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
 
         // play sound only once even if multiple missiles are shot
@@ -193,13 +204,52 @@ public class GameModel implements IGameModel {
         toDestroy.forEach(m -> m = null);
     }
 
+    @Override
+    public int getScore() {
+        return score;
+    }
+
+    @Override
+    public int getNumberOfMissilesShot() {
+        return numberOfMissilesShot;
+    }
+
+    @Override
+    public int getNumberOfEnemiesLeft() {
+        return 0; // TODO
+    }
+
+    @Override
     public List<GameObject> getGameObjects() {
-        return Stream.concat(Stream.of(this.cannon), this.missiles.stream()).toList();
+        return Stream.concat(
+                Stream.of(this.cannon, this.gameInfo),
+                this.missiles.stream()
+        ).toList();
     }
 
     @Override
     public Position getCannonPosition() {
         return this.cannon.getPosition();
+    }
+
+    @Override
+    public double getCannonAngle() {
+        return this.cannon.getAngle();
+    }
+
+    @Override
+    public int getCannonPower() {
+        return this.cannon.getPower();
+    }
+
+    @Override
+    public IShootingMode getCannonShootingMode() {
+        return this.cannon.getShootingMode();
+    }
+
+    @Override
+    public int getCannonDynamicShootingModeNumberOfMissiles() {
+        return this.cannon.getDynamicShootingModeNumberOfMissiles();
     }
 
     @Override

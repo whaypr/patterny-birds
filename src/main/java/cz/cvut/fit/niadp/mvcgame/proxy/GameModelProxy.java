@@ -106,6 +106,21 @@ public class GameModelProxy implements IGameModel {
     }
 
     @Override
+    public int getScore() {
+        return this.subject.getScore();
+    }
+
+    @Override
+    public int getNumberOfMissilesShot() {
+        return this.subject.getNumberOfMissilesShot();
+    }
+
+    @Override
+    public int getNumberOfEnemiesLeft() {
+        return this.subject.getNumberOfEnemiesLeft();
+    }
+
+    @Override
     public List<GameObject> getGameObjects() {
         return this.subject.getGameObjects();
     }
@@ -113,6 +128,26 @@ public class GameModelProxy implements IGameModel {
     @Override
     public Position getCannonPosition() {
         return this.subject.getCannonPosition();
+    }
+
+    @Override
+    public double getCannonAngle() {
+        return this.subject.getCannonAngle();
+    }
+
+    @Override
+    public int getCannonPower() {
+        return this.subject.getCannonPower();
+    }
+
+    @Override
+    public IShootingMode getCannonShootingMode() {
+        return this.subject.getCannonShootingMode();
+    }
+
+    @Override
+    public int getCannonDynamicShootingModeNumberOfMissiles() {
+        return this.subject.getCannonDynamicShootingModeNumberOfMissiles();
     }
 
     @Override
