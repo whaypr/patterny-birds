@@ -1,11 +1,15 @@
 package cz.cvut.fit.niadp.mvcgame.config;
 
+import cz.cvut.fit.niadp.mvcgame.model.Position;
+
 public class MvcGameConfig {
 
     /* CONSTANTS */
     public static final String GAME_TITLE = "The NI-ADP MvcGame";
     public static final int MAX_X = 1474; //1920;
     public static final int MAX_Y = 829; //1080;
+    public static final Position GAME_INFO_DEFAULT_TOP_LEFT = new Position(10, 10);
+    public static final Position GAME_INFO_DEFAULT_BOTTOM_RIGHT = new Position(MAX_X-10, 100);
     public static final int MOVE_STEP = 10;
     public static final int CANNON_POS_X = 200;
     public static final int CANNON_POS_Y = MAX_Y / 2;
@@ -37,6 +41,7 @@ public class MvcGameConfig {
     public static final String UNDO_LAST_COMMAND_KEY = "R";
 
     /* RESOURCES */
+    public static final String BACKGROUND_IMAGE_RESOURCE = "images/back.jpg";
     public static final String CANNON_IMAGE_RESOURCE = "images/cannon.png";
     public static final String CANNON_MOVE_SOUND_RESOURCE = "sounds/canonMove.wav";
     public static final String MISSILE_IMAGE_RESOURCE = "images/missile.png";
