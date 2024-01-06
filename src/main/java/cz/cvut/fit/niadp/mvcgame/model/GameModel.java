@@ -85,7 +85,6 @@ public class GameModel implements IGameModel {
         this.executedCommands.pop().unExecute();
         // TODO add some way to notify only the correct aspect
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        this.notifyObservers(Aspect.OBJECT_ANGLES);
         this.notifyObservers(Aspect.STATUS);
     }
 
@@ -106,13 +105,11 @@ public class GameModel implements IGameModel {
     @Override
     public void aimCannonUp() {
         this.cannon.aimUp();
-        this.notifyObservers(Aspect.OBJECT_ANGLES);
     }
 
     @Override
     public void aimCannonDown() {
         this.cannon.aimDown();
-        this.notifyObservers(Aspect.OBJECT_ANGLES);
     }
 
     @Override
