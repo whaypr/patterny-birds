@@ -1,6 +1,6 @@
 package cz.cvut.fit.niadp.mvcgame.state;
 
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 
 public class DoubleShootingMode implements IShootingMode {
     @Override

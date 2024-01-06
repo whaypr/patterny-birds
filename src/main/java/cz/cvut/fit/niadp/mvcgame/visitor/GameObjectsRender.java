@@ -5,10 +5,10 @@ import cz.cvut.fit.niadp.mvcgame.bridge.IGameGraphics;
 import cz.cvut.fit.niadp.mvcgame.bridge.NoGraphics;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsGameInfo;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo.AbsGameInfo;
 
 public class GameObjectsRender implements IGameObjectsVisitor {
     private IGameGraphics gameGraphics;

@@ -2,7 +2,7 @@ package cz.cvut.fit.niadp.mvcgame.model;
 
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.GameObjectsFactoryA;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.strategy.IMovingStrategy;
 import cz.cvut.fit.niadp.mvcgame.strategy.SimpleMovingStrategy;
 import mockit.Mock;

@@ -1,4 +1,4 @@
-package cz.cvut.fit.niadp.mvcgame.model.gameObjects;
+package cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo;
 
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;

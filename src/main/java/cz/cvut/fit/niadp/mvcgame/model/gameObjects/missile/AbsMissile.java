@@ -1,6 +1,7 @@
-package cz.cvut.fit.niadp.mvcgame.model.gameObjects;
+package cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile;
 
 import cz.cvut.fit.niadp.mvcgame.model.Position;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.LifetimeLimitedGameObject;
 import cz.cvut.fit.niadp.mvcgame.visitor.IGameObjectsVisitor;
 
 public abstract class AbsMissile extends LifetimeLimitedGameObject {

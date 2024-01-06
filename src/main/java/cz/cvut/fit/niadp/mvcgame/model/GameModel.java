@@ -1,7 +1,10 @@
 package cz.cvut.fit.niadp.mvcgame.model;
 
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo.AbsGameInfo;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.observer.SoundMaker;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.GameObjectsFactoryA;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
