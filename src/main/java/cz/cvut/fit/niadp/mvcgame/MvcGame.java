@@ -9,7 +9,6 @@ import cz.cvut.fit.niadp.mvcgame.model.GameModel;
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.proxy.GameModelProxy;
 import cz.cvut.fit.niadp.mvcgame.view.GameView;
-import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 
 public class MvcGame {
 

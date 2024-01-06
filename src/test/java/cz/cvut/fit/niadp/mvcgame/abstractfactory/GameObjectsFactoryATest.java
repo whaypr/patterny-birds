@@ -1,7 +1,6 @@
 package cz.cvut.fit.niadp.mvcgame.abstractfactory;
 
 import cz.cvut.fit.niadp.mvcgame.model.GameModel;
-import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 import org.junit.Assert;
 import org.junit.Test;
 

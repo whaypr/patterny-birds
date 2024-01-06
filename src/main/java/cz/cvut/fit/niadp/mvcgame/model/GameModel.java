@@ -1,5 +1,6 @@
 package cz.cvut.fit.niadp.mvcgame.model;
 
+import cz.cvut.fit.niadp.mvcgame.observer.SoundMaker;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.GameObjectsFactoryA;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
 import cz.cvut.fit.niadp.mvcgame.command.AbstractGameCommand;
@@ -11,14 +12,11 @@ import java.util.*;
 
 import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 import cz.cvut.fit.niadp.mvcgame.strategy.*;
-import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Stream;
 
 public class GameModel implements IGameModel {
-
-    private final GameObjectsSoundMaker soundMaker;
 
     private final Map<Aspect, Set<IObserver>> observers;
     private final IGameObjectsFactory gameObjectsFactory;
@@ -30,6 +28,7 @@ public class GameModel implements IGameModel {
     private int score;
     private int numberOfMissilesShot;
 
+    private SoundMaker soundMaker;
     private AbsGameInfo gameInfo;
 
     private final Queue<AbstractGameCommand> unexecutedCommands;
@@ -41,13 +40,16 @@ public class GameModel implements IGameModel {
         this.unexecutedCommands = new LinkedBlockingQueue<>();
         this.executedCommands = new Stack<>();
 
-        this.soundMaker = new GameObjectsSoundMaker();
         this.movingStrategy = new SimpleMovingStrategy();
 
         GameObjectsFactoryA.createInstance(this);
         this.gameObjectsFactory = GameObjectsFactoryA.getInstance();
         this.cannon = this.gameObjectsFactory.createCannon();
         this.gameInfo = this.gameObjectsFactory.createGameInfo();
+
+        this.soundMaker = new SoundMaker();
+        this.registerObserver(soundMaker, Aspect.CANNON_MOVE);
+        this.registerObserver(soundMaker, Aspect.MISSILE_SPAWN);
 
         this.score = 0;
         this.numberOfMissilesShot = 0;
@@ -91,14 +93,14 @@ public class GameModel implements IGameModel {
     public void moveCannonUp() {
         this.cannon.moveUp();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
+        this.notifyObservers(Aspect.CANNON_MOVE);
     }
 
     @Override
     public void moveCannonDown() {
         this.cannon.moveDown();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
+        this.notifyObservers(Aspect.CANNON_MOVE);
     }
 
     @Override
@@ -131,10 +133,9 @@ public class GameModel implements IGameModel {
 
         this.missiles.addAll(newMissiles);
         this.numberOfMissilesShot += newMissiles.size();
-        this.notifyObservers(Aspect.OBJECT_POSITIONS);
 
-        // play sound only once even if multiple missiles are shot
-        newMissiles.get(0).acceptVisitor(soundMaker); // soundMaker.visitMissile(missiles.get(0));
+        this.notifyObservers(Aspect.OBJECT_POSITIONS);
+        this.notifyObservers(Aspect.MISSILE_SPAWN);
     }
 
     @Override

@@ -2,7 +2,6 @@ package cz.cvut.fit.niadp.mvcgame.model;
 
 import cz.cvut.fit.niadp.mvcgame.command.CannonMoveUpCommand;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
-import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 import org.junit.Assert;
 import org.junit.Test;
 
