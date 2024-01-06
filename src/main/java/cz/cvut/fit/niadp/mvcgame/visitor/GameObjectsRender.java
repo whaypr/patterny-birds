@@ -6,6 +6,7 @@ import cz.cvut.fit.niadp.mvcgame.bridge.NoGraphics;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsGameInfo;
 
@@ -54,6 +55,16 @@ public class GameObjectsRender implements IGameObjectsVisitor {
     }
 
     @Override
+    public void visitEnemy(AbsEnemy enemy) {
+        switch (enemy.getType()) {
+            case BASIC ->
+                    this.gameGraphics.drawImage(MvcGameConfig.ENEMY_BASIC_IMAGE_RESOURCE, enemy.getPosition());
+            case WITH_HELMET ->
+                    this.gameGraphics.drawImage(MvcGameConfig.ENEMY_WITH_HELMET_IMAGE_RESOURCE, enemy.getPosition());
+        }
+    }
+
+    @Override
     public void visitGameInfo(AbsGameInfo gameInfo) {
         this.gameGraphics.drawRectangle(borderTopLeft, borderBottomRight);
         printColumn(
@@ -72,7 +83,7 @@ public class GameObjectsRender implements IGameObjectsVisitor {
                 3,
                 "Score: " + gameInfo.score(),
                 "Missiles shot: " + gameInfo.numberOfMissilesShot(),
-                "Enemies left: " + gameInfo.enemiesLeft();
+                "Enemies left: " + gameInfo.enemiesLeft()
         );
     }
 }

@@ -1,5 +1,7 @@
 package cz.cvut.fit.niadp.mvcgame.model;
 
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
 import cz.cvut.fit.niadp.mvcgame.observer.SoundMaker;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.GameObjectsFactoryA;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
@@ -14,7 +16,6 @@ import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 import cz.cvut.fit.niadp.mvcgame.strategy.*;
 
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Stream;
 
 public class GameModel implements IGameModel {
 
@@ -23,6 +24,7 @@ public class GameModel implements IGameModel {
 
     private final AbsCannon cannon;
     private final List<AbsMissile> missiles;
+    private final List<AbsEnemy> enemies;
     private IMovingStrategy movingStrategy;
 
     private int score;
@@ -35,17 +37,19 @@ public class GameModel implements IGameModel {
     private final Stack<AbstractGameCommand> executedCommands;
 
     public GameModel() {
-        this.observers = new HashMap<>();
+        GameObjectsFactoryA.createInstance(this);
+        this.gameObjectsFactory = GameObjectsFactoryA.getInstance();
+        this.gameInfo = this.gameObjectsFactory.createGameInfo();
+        this.cannon = this.gameObjectsFactory.createCannon();
         this.missiles = new ArrayList<>();
+        this.enemies = createEnemies();
+
+        this.observers = new HashMap<>();
+
         this.unexecutedCommands = new LinkedBlockingQueue<>();
         this.executedCommands = new Stack<>();
 
         this.movingStrategy = new SimpleMovingStrategy();
-
-        GameObjectsFactoryA.createInstance(this);
-        this.gameObjectsFactory = GameObjectsFactoryA.getInstance();
-        this.cannon = this.gameObjectsFactory.createCannon();
-        this.gameInfo = this.gameObjectsFactory.createGameInfo();
 
         this.soundMaker = new SoundMaker();
         this.registerObserver(soundMaker, Aspect.CANNON_MOVE);
@@ -191,6 +195,31 @@ public class GameModel implements IGameModel {
 
     /* HELPERS, MODEL INFO */
 
+    private List<AbsEnemy> createEnemies() {
+        List<AbsEnemy> enemies = new ArrayList<>();
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(300, 500),
+                EnemyType.BASIC
+        ));
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(500, 600),
+                EnemyType.WITH_HELMET
+        ));
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(700, 300),
+                EnemyType.WITH_HELMET
+        ));
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(900, 250),
+                EnemyType.WITH_HELMET
+        ));
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(1050, 400),
+                EnemyType.WITH_HELMET
+        ));
+        return enemies;
+    }
+
     private void moveMissiles() {
         this.missiles.forEach(AbsMissile::move);
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
@@ -214,15 +243,17 @@ public class GameModel implements IGameModel {
 
     @Override
     public int getNumberOfEnemiesLeft() {
-        return 0; // TODO
+        return enemies.size();
     }
 
     @Override
     public List<GameObject> getGameObjects() {
-        return Stream.concat(
-                Stream.of(this.cannon, this.gameInfo),
-                this.missiles.stream()
-        ).toList();
+        List<GameObject> objects = new ArrayList<>();
+        objects.add(this.cannon);
+        objects.add(this.gameInfo);
+        objects.addAll(this.missiles);
+        objects.addAll(this.enemies);
+        return objects;
     }
 
     @Override

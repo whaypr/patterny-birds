@@ -7,6 +7,9 @@ import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsGameInfo;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.CannonA;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameInfo;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.MissileA;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyA;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
 
 public class GameObjectsFactoryA implements IGameObjectsFactory {
     private final IGameModel model;
@@ -44,6 +47,14 @@ public class GameObjectsFactoryA implements IGameObjectsFactory {
                 initVelocity,
                 lifeTime,
                 this.model.getMissileMovingStrategy()
+        );
+    }
+
+    @Override
+    public AbsEnemy createEnemy(Position position, EnemyType type) {
+        return new EnemyA(
+                position,
+                type
         );
     }
 

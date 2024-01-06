@@ -44,4 +44,6 @@ public class MvcGameConfig {
     public static final String CANNON_MOVE_SOUND_RESOURCE = "sounds/canonMove.wav";
     public static final String MISSILE_IMAGE_RESOURCE = "images/missile.png";
     public static final String MISSILE_LAUNCH_SOUND_RESOURCE = "sounds/missileLaunch.wav";
+    public static final String ENEMY_BASIC_IMAGE_RESOURCE = "images/enemy_basic.png";
+    public static final String ENEMY_WITH_HELMET_IMAGE_RESOURCE = "images/enemy_with_helmet.png";
 }
