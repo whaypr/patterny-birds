@@ -7,7 +7,7 @@ import java.time.temporal.ChronoUnit;
 
 public abstract class LifetimeLimitedGameObject extends GameObject {
 
-    private final long lifeTime;
+    protected final long lifeTime;
     private final LocalDateTime bornAt;
 
     protected LifetimeLimitedGameObject(Position position, long lifeTime) {

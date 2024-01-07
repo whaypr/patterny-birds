@@ -405,9 +405,9 @@ public class GameModel implements IGameModel {
     @Override
     public Object createMemento() {
         Memento memento = new Memento();
-        memento.cannonPosition = new Position(this.cannon.getPosition().getX(), this.cannon.getPosition().getY());
-        memento.missiles = this.missiles.stream().map(m -> this.gameObjectsFactory.createMissile(m.getInitAngle(), m.getInitVelocity(), MvcGameConfig.DEFAULT_MISSILE_LIFETIME)).collect(Collectors.toList());
-        memento.enemies = this.enemies.stream().map(e -> this.gameObjectsFactory.createEnemy(e.getPosition(), e.getType())).collect(Collectors.toList());
+        memento.cannonPosition = this.cannon.getPosition().clone();
+        memento.missiles = this.missiles.stream().map(AbsMissile::clone).collect(Collectors.toList());
+        memento.enemies = this.enemies.stream().map(AbsEnemy::clone).collect(Collectors.toList());
         memento.score = this.score;
         memento.numberOfMissilesShot = this.numberOfMissilesShot;
         return memento;

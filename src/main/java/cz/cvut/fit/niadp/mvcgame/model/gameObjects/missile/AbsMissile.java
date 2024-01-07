@@ -20,6 +20,13 @@ public abstract class AbsMissile extends LifetimeLimitedGameObject implements IC
         this.collisionChecker = new CollisionChecker(this, MvcGameConfig.MISSILE_HITBOX);
     }
 
+    protected AbsMissile(AbsMissile other) {
+        super(other.position, other.lifeTime - other.getAge());
+        this.initAngle = other.getInitAngle();
+        this.initVelocity = other.getInitVelocity();
+        this.collisionChecker = other.collisionChecker;
+    }
+
     public abstract void move();
 
     public double getInitAngle() {
@@ -39,4 +46,6 @@ public abstract class AbsMissile extends LifetimeLimitedGameObject implements IC
     public CollisionChecker getCollisionChecker() {
         return this.collisionChecker;
     }
+
+    public abstract AbsMissile clone();
 }

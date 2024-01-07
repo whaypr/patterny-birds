@@ -12,8 +12,18 @@ public class MissileA extends AbsMissile {
         this.movingStrategy = movingStrategy;
     }
 
+    public MissileA(MissileA other) {
+        super(other);
+        this.movingStrategy = other.movingStrategy;
+    }
+
     @Override
     public void move() {
         this.movingStrategy.updatePosition(this);
+    }
+
+    @Override
+    public AbsMissile clone() {
+        return new MissileA(this);
     }
 }

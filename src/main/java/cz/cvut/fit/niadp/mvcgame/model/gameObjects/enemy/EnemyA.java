@@ -9,4 +9,15 @@ public class EnemyA extends AbsEnemy {
         this.position = position;
         this.type = type;
     }
+
+    public EnemyA(EnemyA other) {
+        super(other);
+        this.position = other.position;
+        this.type = other.type;
+    }
+
+    @Override
+    public AbsEnemy clone() {
+        return new EnemyA(this);
+    }
 }
