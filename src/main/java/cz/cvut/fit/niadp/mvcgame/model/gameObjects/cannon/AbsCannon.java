@@ -2,8 +2,8 @@ package cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon;
 
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.collisions.CollisionChecker;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.collisions.ICollidable;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionChecker;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollidable;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
 import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;

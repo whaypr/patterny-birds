@@ -1,4 +1,4 @@
-package cz.cvut.fit.niadp.mvcgame.model.gameObjects.collisions;
+package cz.cvut.fit.niadp.mvcgame.model.collisions;
 
 import cz.cvut.fit.niadp.mvcgame.model.Vector;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;

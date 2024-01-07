@@ -3,8 +3,8 @@ package cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.LifetimeLimitedGameObject;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.collisions.CollisionChecker;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.collisions.ICollidable;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionChecker;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollidable;
 import cz.cvut.fit.niadp.mvcgame.visitor.IGameObjectsVisitor;
 
 public abstract class AbsMissile extends LifetimeLimitedGameObject implements ICollidable {
