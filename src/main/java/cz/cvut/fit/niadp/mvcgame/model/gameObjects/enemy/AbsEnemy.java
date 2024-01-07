@@ -13,7 +13,7 @@ public abstract class AbsEnemy extends GameObject implements ICollidable {
     protected EnemyType type;
 
     protected AbsEnemy() {
-        this.collisionChecker = new CollisionChecker(this, MvcGameConfig.WALL_HITBOX);
+        this.collisionChecker = new CollisionChecker(this, MvcGameConfig.ENEMY_HITBOX);
     }
 
     public EnemyType getType() {
