@@ -1,10 +1,12 @@
 package cz.cvut.fit.niadp.mvcgame.model;
 
+import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo.AbsGameInfo;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.wall.AbsWall;
 import cz.cvut.fit.niadp.mvcgame.observer.SoundMaker;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.GameObjectsFactoryA;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
@@ -28,6 +30,7 @@ public class GameModel implements IGameModel {
     private final AbsCannon cannon;
     private final List<AbsMissile> missiles;
     private final List<AbsEnemy> enemies;
+    private final List<AbsWall> walls;
     private IMovingStrategy movingStrategy;
 
     private int score;
@@ -46,6 +49,7 @@ public class GameModel implements IGameModel {
         this.cannon = this.gameObjectsFactory.createCannon();
         this.missiles = new ArrayList<>();
         this.enemies = createEnemies();
+        this.walls = createWalls();
 
         this.observers = new HashMap<>();
 
@@ -223,6 +227,32 @@ public class GameModel implements IGameModel {
         return enemies;
     }
 
+    private List<AbsWall> createWalls() {
+        List<AbsWall> walls = new ArrayList<>();
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(200, 100)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(250, 500)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 132)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 164)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 196)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 228)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 260)
+        ));
+        return walls;
+    }
+
     private void moveMissiles() {
         this.missiles.forEach(AbsMissile::move);
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
@@ -256,6 +286,7 @@ public class GameModel implements IGameModel {
         objects.add(this.gameInfo);
         objects.addAll(this.missiles);
         objects.addAll(this.enemies);
+        objects.addAll(this.walls);
         return objects;
     }
 

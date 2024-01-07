@@ -10,6 +10,8 @@ import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.MissileA;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyA;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.wall.AbsWall;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.wall.WallA;
 
 public class GameObjectsFactoryA implements IGameObjectsFactory {
     private final IGameModel model;
@@ -56,6 +58,11 @@ public class GameObjectsFactoryA implements IGameObjectsFactory {
                 position,
                 type
         );
+    }
+
+    @Override
+    public AbsWall createWall(Position position) {
+        return new WallA(position);
     }
 
     @Override

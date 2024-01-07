@@ -9,6 +9,7 @@ import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo.AbsGameInfo;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.wall.AbsWall;
 
 public class GameObjectsRender implements IGameObjectsVisitor {
     private IGameGraphics gameGraphics;
@@ -62,6 +63,11 @@ public class GameObjectsRender implements IGameObjectsVisitor {
             case WITH_HELMET ->
                     this.gameGraphics.drawImage(MvcGameConfig.ENEMY_WITH_HELMET_IMAGE_RESOURCE, enemy.getPosition());
         }
+    }
+
+    @Override
+    public void visitWall(AbsWall wall) {
+        this.gameGraphics.drawImage((MvcGameConfig.WALL_IMAGE_RESOURCE), wall.getPosition());
     }
 
     @Override
