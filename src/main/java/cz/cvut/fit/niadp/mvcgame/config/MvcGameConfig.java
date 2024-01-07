@@ -34,14 +34,14 @@ public class MvcGameConfig {
     public static final String DOWN_KEY = "DOWN";
     public static final String EXIT_KEY = "ESCAPE";
     public static final String SHOOT_KEY = "SPACE";
-    public static final String AIM_UP_KEY = "A";
-    public static final String AIM_DOWN_KEY = "Y";
-    public static final String POWER_UP_KEY = "F";
-    public static final String POWER_DOWN_KEY = "D";
-    public static final String MOVING_STRATEGY_KEY = "M";
-    public static final String DYNAMIC_SHOOTING_MODE_ADD_MISSILE_KEY = "O";
-    public static final String DYNAMIC_SHOOTING_MODE_REMOVE_MISSILE_KEY = "P";
-    public static final String SHOOTING_MODE_KEY = "N";
+    public static final String AIM_UP_KEY = "LEFT";
+    public static final String AIM_DOWN_KEY = "RIGHT";
+    public static final String POWER_UP_KEY = "A";
+    public static final String POWER_DOWN_KEY = "Y";
+    public static final String MOVING_STRATEGY_KEY = "S";
+    public static final String DYNAMIC_SHOOTING_MODE_ADD_MISSILE_KEY = "D";
+    public static final String DYNAMIC_SHOOTING_MODE_REMOVE_MISSILE_KEY = "C";
+    public static final String SHOOTING_MODE_KEY = "X";
     public static final String UNDO_LAST_COMMAND_KEY = "R";
 
     /* RESOURCES */

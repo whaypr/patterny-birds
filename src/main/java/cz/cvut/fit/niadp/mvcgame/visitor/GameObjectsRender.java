@@ -16,7 +16,7 @@ public class GameObjectsRender implements IGameObjectsVisitor {
 
     private static final Position borderTopLeft = new Position(10, 10);
     private static final Position borderBottomRight = new Position(MvcGameConfig.MAX_X - 10, 100);
-    private static final int columnsXOffset = 320;
+    private static final int columnsXOffset = 330;
     private static final int textYOffset = 25;
     private void printColumn(int columnNumber, String top, String middle, String bottom) {
         Position columnTopLeft = new Position(
@@ -77,13 +77,13 @@ public class GameObjectsRender implements IGameObjectsVisitor {
                 1,
                 "Cannon angle: " + gameInfo.cannonAngle(),
                 "Cannon power: " + gameInfo.cannonPower(),
-                "Cannon shooting state: " + gameInfo.cannonShootingState().getName()
+                ""
         );
         printColumn(
                 2,
                 "Missile moving strat: " + gameInfo.missilesMovingStrategy().getName(),
-                "Dynamic mode missiles: " + gameInfo.cannonDynamicShootingModeNumberOfMissiles(),
-                ""
+                "Cannon shooting state: " + gameInfo.cannonShootingState().getName(),
+                "Dynamic mode missiles: " + gameInfo.cannonDynamicShootingModeNumberOfMissiles()
         );
         printColumn(
                 3,
