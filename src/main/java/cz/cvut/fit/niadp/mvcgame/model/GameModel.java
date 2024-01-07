@@ -59,7 +59,6 @@ public class GameModel implements IGameModel {
         this.movingStrategy = new SimpleMovingStrategy();
 
         this.soundMaker = new SoundMaker();
-        this.registerObserver(soundMaker, Aspect.CANNON_MOVE);
         this.registerObserver(soundMaker, Aspect.MISSILE_SPAWN);
         this.registerObserver(soundMaker, Aspect.MISSILE_WALL_HIT);
         this.registerObserver(soundMaker, Aspect.MISSILE_ENEMY_HIT);

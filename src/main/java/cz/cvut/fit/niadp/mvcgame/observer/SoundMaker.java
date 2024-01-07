@@ -22,10 +22,6 @@ public class SoundMaker implements IObserver {
         }
     }
 
-    private void playCanonMoveSound() {
-        playSound(MvcGameConfig.CANNON_MOVE_SOUND_RESOURCE);
-    }
-
     private void playMissileSpawnSound() {
         playSound(MvcGameConfig.MISSILE_LAUNCH_SOUND_RESOURCE);
     }
@@ -42,9 +38,6 @@ public class SoundMaker implements IObserver {
     @Override
     public void update(Aspect aspect) {
         switch (aspect) {
-            case CANNON_MOVE:
-                playCanonMoveSound();
-                break;
             case MISSILE_SPAWN:
                 playMissileSpawnSound();
                 break;
