@@ -1,6 +1,7 @@
 package cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon;
 
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.collisions.CollisionChecker;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.collisions.ICollidable;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
@@ -17,6 +18,7 @@ public abstract class AbsCannon extends GameObject implements ICollidable {
 
     private final CollisionChecker collisionChecker;
 
+    protected CircularIterator<IShootingMode> shootingModeIterator;
     protected IShootingMode shootingMode;
     protected static IShootingMode SINGLE_SHOOTING_MODE = new SingleShootingMode();
     protected static IShootingMode DOUBLE_SHOOTING_MODE = new DoubleShootingMode();

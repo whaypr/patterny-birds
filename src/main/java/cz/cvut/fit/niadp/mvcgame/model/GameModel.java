@@ -2,6 +2,7 @@ package cz.cvut.fit.niadp.mvcgame.model;
 
 import cz.cvut.fit.niadp.mvcgame.command.UndoableGameCommand;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
@@ -33,6 +34,8 @@ public class GameModel implements IGameModel {
     private List<AbsMissile> missiles;
     private List<AbsEnemy> enemies;
     private final List<AbsWall> walls;
+
+    private CircularIterator<IMovingStrategy> missileMovingStrategyIterator;
     private IMovingStrategy missilesMovingStrategy;
 
     private int score;
@@ -58,7 +61,13 @@ public class GameModel implements IGameModel {
         this.unexecutedCommands = new LinkedBlockingQueue<>();
         this.undoableCommands = new Stack<>();
 
-        this.missilesMovingStrategy = new SimpleMovingStrategy();
+        this.missileMovingStrategyIterator = new CircularIterator<>(Arrays.asList(
+                new SimpleMovingStrategy(),
+                new RealisticMovingStrategy(),
+                new SinusoidalMovingStrategy(),
+                new CircularMovingStrategy())
+        );
+        this.missilesMovingStrategy = this.missileMovingStrategyIterator.next();
 
         this.soundMaker = new SoundMaker();
         this.registerObserver(soundMaker, Aspect.MISSILE_SPAWN);
@@ -171,18 +180,7 @@ public class GameModel implements IGameModel {
 
     @Override
     public void toggleMovingStrategy() {
-        if (this.missilesMovingStrategy instanceof SimpleMovingStrategy) {
-            this.missilesMovingStrategy = new RealisticMovingStrategy();
-        }
-        else if (this.missilesMovingStrategy instanceof RealisticMovingStrategy) {
-            this.missilesMovingStrategy = new SinusoidalMovingStrategy();
-        }
-        else if (this.missilesMovingStrategy instanceof SinusoidalMovingStrategy) {
-            this.missilesMovingStrategy = new CircularMovingStrategy();
-        }
-        else if (this.missilesMovingStrategy instanceof CircularMovingStrategy) {
-            this.missilesMovingStrategy = new SimpleMovingStrategy();
-        }
+        this.missilesMovingStrategy = this.missileMovingStrategyIterator.next();
     }
 
     @Override

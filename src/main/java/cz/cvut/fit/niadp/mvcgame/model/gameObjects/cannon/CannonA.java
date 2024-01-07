@@ -2,14 +2,13 @@ package cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon;
 
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.Vector;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
-import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;
-import cz.cvut.fit.niadp.mvcgame.state.DynamicShootingMode;
-import cz.cvut.fit.niadp.mvcgame.state.SingleShootingMode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CannonA extends AbsCannon {
@@ -27,7 +26,11 @@ public class CannonA extends AbsCannon {
         this.angle = MvcGameConfig.INIT_ANGLE;
 
         this.shootingBatch = new ArrayList<>();
-        this.shootingMode = SINGLE_SHOOTING_MODE;
+
+        this.shootingModeIterator = new CircularIterator<>(
+                Arrays.asList(SINGLE_SHOOTING_MODE, DOUBLE_SHOOTING_MODE, DYNAMIC_SHOOTING_MODE)
+        );
+        this.shootingMode = this.shootingModeIterator.next();
     }
 
     @Override
@@ -78,13 +81,7 @@ public class CannonA extends AbsCannon {
 
     @Override
     public void toggleShootingMode() {
-        if (this.shootingMode instanceof SingleShootingMode) {
-            this.shootingMode = DOUBLE_SHOOTING_MODE;
-        } else if (this.shootingMode instanceof DoubleShootingMode) {
-            this.shootingMode = DYNAMIC_SHOOTING_MODE;
-        } else if (this.shootingMode instanceof DynamicShootingMode) {
-            this.shootingMode = SINGLE_SHOOTING_MODE;
-        }
+        this.shootingMode = shootingModeIterator.next();
     }
 
     @Override
