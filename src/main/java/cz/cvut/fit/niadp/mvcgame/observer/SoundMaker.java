@@ -30,6 +30,15 @@ public class SoundMaker implements IObserver {
         playSound(MvcGameConfig.MISSILE_LAUNCH_SOUND_RESOURCE);
     }
 
+    private void playMissileWallHitSound() {
+        playSound(MvcGameConfig.MISSILE_WALL_HIT_SOUND_RESOURCE);
+    }
+
+    private void playMissileEnemyHitSound() {
+        playSound(MvcGameConfig.MISSILE_ENEMY_HIT_SOUND_RESOURCE);
+    }
+
+
     @Override
     public void update(Aspect aspect) {
         switch (aspect) {
@@ -38,6 +47,12 @@ public class SoundMaker implements IObserver {
                 break;
             case MISSILE_SPAWN:
                 playMissileSpawnSound();
+                break;
+            case MISSILE_WALL_HIT:
+                playMissileWallHitSound();
+                break;
+            case MISSILE_ENEMY_HIT:
+                playMissileEnemyHitSound();
                 break;
             default: {}
         }

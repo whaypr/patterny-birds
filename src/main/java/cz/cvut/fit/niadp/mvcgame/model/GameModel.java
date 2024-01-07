@@ -61,6 +61,8 @@ public class GameModel implements IGameModel {
         this.soundMaker = new SoundMaker();
         this.registerObserver(soundMaker, Aspect.CANNON_MOVE);
         this.registerObserver(soundMaker, Aspect.MISSILE_SPAWN);
+        this.registerObserver(soundMaker, Aspect.MISSILE_WALL_HIT);
+        this.registerObserver(soundMaker, Aspect.MISSILE_ENEMY_HIT);
 
         this.score = 0;
         this.numberOfMissilesShot = 0;
@@ -68,9 +70,11 @@ public class GameModel implements IGameModel {
 
     @Override
     public void update() {
-        this.checkLifeTimeLimitedGameObjects();
         this.executeCommands();
         this.moveMissiles();
+        this.handleMissilesWithWallsCollisions();
+        this.handleMissilesWithEnemiesCollisions();
+        this.checkLifeTimeLimitedGameObjects();
     }
 
 
@@ -79,8 +83,14 @@ public class GameModel implements IGameModel {
     private void executeCommands() {
         while (!this.unexecutedCommands.isEmpty()) {
             AbstractGameCommand command = this.unexecutedCommands.poll();
+
+            Memento currentState = (Memento) createMemento();
             command.doExecute();
-            executedCommands.add(command);
+            Memento followingState = (Memento) createMemento();
+
+            if (currentState != followingState) {
+                executedCommands.add(command);
+            }
         }
     }
 
@@ -102,6 +112,10 @@ public class GameModel implements IGameModel {
     @Override
     public void moveCannonUp() {
         this.cannon.moveUp();
+        if (isCannonTouchingWall()) {
+            this.cannon.moveDown();
+            return;
+        }
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
         this.notifyObservers(Aspect.CANNON_MOVE);
     }
@@ -109,6 +123,10 @@ public class GameModel implements IGameModel {
     @Override
     public void moveCannonDown() {
         this.cannon.moveDown();
+        if (isCannonTouchingWall()) {
+            this.cannon.moveUp();
+            return;
+        }
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
         this.notifyObservers(Aspect.CANNON_MOVE);
     }
@@ -264,6 +282,55 @@ public class GameModel implements IGameModel {
         toDestroy.forEach(m -> m = null);
     }
 
+    private void handleMissilesWithWallsCollisions() {
+        List<AbsMissile> missilesToRemove = new ArrayList<>();
+        for (AbsMissile missile: this.missiles) {
+            for (AbsWall wall: this.walls) {
+                if (missile.getCollisionChecker().collided(wall.getCollisionChecker())) {
+                    missilesToRemove.add(missile);
+                }
+            }
+        }
+        if (!missilesToRemove.isEmpty())
+            this.notifyObservers(Aspect.MISSILE_WALL_HIT);
+        this.missiles.removeAll(missilesToRemove);
+    }
+
+    private void handleMissilesWithEnemiesCollisions() {
+        List<AbsEnemy> hitEnemies = new ArrayList<>();
+        List<AbsMissile> missilesToRemove = new ArrayList<>();
+        for (AbsMissile missile: this.missiles) {
+            for (AbsEnemy enemy: this.enemies) {
+                if (missile.getCollisionChecker().collided(enemy.getCollisionChecker())) {
+                    missilesToRemove.add(missile);
+                    hitEnemies.add(enemy);
+                    score += MvcGameConfig.POINTS_FOR_HIT;
+                }
+            }
+        }
+        if (!missilesToRemove.isEmpty())
+            this.notifyObservers(Aspect.MISSILE_ENEMY_HIT);
+        this.missiles.removeAll(missilesToRemove);
+
+        List<AbsEnemy> enemiesToRemove = new ArrayList<>();
+        for (AbsEnemy enemy: hitEnemies) {
+            switch (enemy.getType()) {
+                case BASIC -> enemiesToRemove.add(enemy);
+                case WITH_HELMET -> enemy.changeType(EnemyType.BASIC);
+            }
+        }
+        this.enemies.removeAll(enemiesToRemove);
+    }
+
+    private boolean isCannonTouchingWall() {
+        for (AbsWall wall: this.walls) {
+            if (this.cannon.getCollisionChecker().collided(wall.getCollisionChecker())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public int getScore() {
         return score;
@@ -331,7 +398,12 @@ public class GameModel implements IGameModel {
     private static class Memento {
         private int cannonPositionX;
         private int cannonPositionY;
-        // game model snapshot (enemies, gameInfo, strategy, state)
+        // TODO game model snapshot (enemies, gameInfo, strategy, state)
+
+        public boolean isEqual(Memento other) {
+            return     this.cannonPositionX == other.cannonPositionX
+                    && this.cannonPositionY == other.cannonPositionY;
+        }
     }
 
     @Override

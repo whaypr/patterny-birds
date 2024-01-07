@@ -4,5 +4,7 @@ public enum Aspect {
     STATUS,
     OBJECT_POSITIONS,
     MISSILE_SPAWN,
-    CANNON_MOVE
+    MISSILE_WALL_HIT,
+    MISSILE_ENEMY_HIT,
+    CANNON_MOVE,
 }
