@@ -2,6 +2,8 @@ package cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile;
 
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionResponse;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollisionChecker;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.LifetimeLimitedGameObject;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionChecker;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollidable;
@@ -11,13 +13,16 @@ public abstract class AbsMissile extends LifetimeLimitedGameObject implements IC
 
     private final double initAngle;
     private final int initVelocity;
-    private final CollisionChecker collisionChecker;
+    private ICollisionChecker collisionChecker;
 
     protected AbsMissile(Position initPosition, double initAngle, int initVelocity, long lifeTime) {
         super(initPosition, lifeTime);
         this.initAngle = initAngle;
         this.initVelocity = initVelocity;
-        this.collisionChecker = new CollisionChecker(this, MvcGameConfig.MISSILE_HITBOX);
+        this.collisionChecker = new CollisionChecker(
+                this, MvcGameConfig.MISSILE_HITBOX,
+                CollisionResponse.IGNORE, CollisionResponse.DESTROY, CollisionResponse.DESTROY
+        );
     }
 
     protected AbsMissile(AbsMissile other) {
@@ -43,7 +48,7 @@ public abstract class AbsMissile extends LifetimeLimitedGameObject implements IC
     }
 
     @Override
-    public CollisionChecker getCollisionChecker() {
+    public ICollisionChecker getCollisionChecker() {
         return this.collisionChecker;
     }
 

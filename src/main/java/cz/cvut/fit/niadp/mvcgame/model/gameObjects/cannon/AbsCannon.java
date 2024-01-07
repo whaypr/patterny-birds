@@ -3,7 +3,9 @@ package cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionChecker;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionResponse;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollidable;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollisionChecker;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
 import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;
@@ -16,7 +18,7 @@ import java.util.List;
 
 public abstract class AbsCannon extends GameObject implements ICollidable {
 
-    private final CollisionChecker collisionChecker;
+    private final ICollisionChecker collisionChecker;
 
     protected CircularIterator<IShootingMode> shootingModeIterator;
     protected IShootingMode shootingMode;
@@ -28,7 +30,10 @@ public abstract class AbsCannon extends GameObject implements ICollidable {
     protected double angle;
 
     protected AbsCannon() {
-        this.collisionChecker = new CollisionChecker(this, MvcGameConfig.CANNON_HITBOX);
+        this.collisionChecker = new CollisionChecker(
+                this, MvcGameConfig.CANNON_HITBOX,
+                CollisionResponse.IGNORE, CollisionResponse.IGNORE, CollisionResponse.STOP
+        );
     }
 
     public int getPower() {
@@ -60,7 +65,7 @@ public abstract class AbsCannon extends GameObject implements ICollidable {
     }
 
     @Override
-    public CollisionChecker getCollisionChecker() {
+    public ICollisionChecker getCollisionChecker() {
         return this.collisionChecker;
     }
 

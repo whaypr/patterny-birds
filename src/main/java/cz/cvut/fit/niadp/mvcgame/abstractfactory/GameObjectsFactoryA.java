@@ -3,6 +3,7 @@ package cz.cvut.fit.niadp.mvcgame.abstractfactory;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollisionChecker;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo.AbsGameInfo;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.CannonA;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo.GameInfo;

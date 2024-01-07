@@ -3,6 +3,7 @@ package cz.cvut.fit.niadp.mvcgame.model;
 import cz.cvut.fit.niadp.mvcgame.command.UndoableGameCommand;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionResponse;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
@@ -299,7 +300,8 @@ public class GameModel implements IGameModel {
         List<AbsMissile> missilesToRemove = new ArrayList<>();
         for (AbsMissile missile: this.missiles) {
             for (AbsWall wall: this.walls) {
-                if (missile.getCollisionChecker().collided(wall.getCollisionChecker())) {
+                CollisionResponse response = missile.getCollisionChecker().checkAndRespond(wall);
+                if (response == CollisionResponse.DESTROY) {
                     missilesToRemove.add(missile);
                 }
             }
@@ -314,14 +316,17 @@ public class GameModel implements IGameModel {
         List<AbsMissile> missilesToRemove = new ArrayList<>();
         for (AbsMissile missile: this.missiles) {
             for (AbsEnemy enemy: this.enemies) {
-                if (missile.getCollisionChecker().collided(enemy.getCollisionChecker())) {
-                    missilesToRemove.add(missile);
-                    hitEnemies.add(enemy);
+                CollisionResponse response = missile.getCollisionChecker().checkAndRespond(enemy);
+                if (response != CollisionResponse.NO_COLLISION) {
                     score += MvcGameConfig.POINTS_FOR_HIT;
+                    hitEnemies.add(enemy);
+                }
+                if (response == CollisionResponse.DESTROY) {
+                    missilesToRemove.add(missile);
                 }
             }
         }
-        if (!missilesToRemove.isEmpty())
+        if (!hitEnemies.isEmpty())
             this.notifyObservers(Aspect.MISSILE_ENEMY_HIT);
         this.missiles.removeAll(missilesToRemove);
 
@@ -337,7 +342,7 @@ public class GameModel implements IGameModel {
 
     private boolean isCannonTouchingWall() {
         for (AbsWall wall: this.walls) {
-            if (this.cannon.getCollisionChecker().collided(wall.getCollisionChecker())) {
+            if (this.cannon.getCollisionChecker().checkAndRespond(wall) != CollisionResponse.NO_COLLISION) {
                 return true;
             }
         }
