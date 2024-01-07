@@ -38,6 +38,9 @@ public class GameModel implements IGameModel {
     private CircularIterator<IMovingStrategy> missileMovingStrategyIterator;
     private IMovingStrategy missilesMovingStrategy;
 
+    private boolean missilesWallPiercing;
+    private boolean missilesEnemyPiercing;
+
     private int score;
     private int numberOfMissilesShot;
 
@@ -73,6 +76,9 @@ public class GameModel implements IGameModel {
         this.registerObserver(soundMaker, Aspect.MISSILE_SPAWN);
         this.registerObserver(soundMaker, Aspect.MISSILE_WALL_HIT);
         this.registerObserver(soundMaker, Aspect.MISSILE_ENEMY_HIT);
+
+        this.missilesWallPiercing = MvcGameConfig.MISSILES_DEFAULT_WALL_PIERCING;
+        this.missilesEnemyPiercing = MvcGameConfig.MISSILES_DEFAULT_ENEMY_PIERCING;
 
         this.score = 0;
         this.numberOfMissilesShot = 0;
@@ -191,6 +197,16 @@ public class GameModel implements IGameModel {
     @Override
     public void removeMissilesForDynamicShootingMode(int toRemove) {
         cannon.removeMissilesForDynamicShootingMode(toRemove);
+    }
+
+    @Override
+    public void toggleMissilesWallPiercing() {
+        this.missilesWallPiercing = !this.missilesWallPiercing;
+    }
+
+    @Override
+    public void toggleMissilesEnemyPiercing() {
+        this.missilesEnemyPiercing = !this.missilesEnemyPiercing;
     }
 
 
@@ -387,6 +403,14 @@ public class GameModel implements IGameModel {
     @Override
     public IMovingStrategy getMissileMovingStrategy() {
         return this.missilesMovingStrategy;
+    }
+
+    @Override public boolean getMissilesWallPiercing() {
+        return this.missilesWallPiercing;
+    }
+
+    @Override public boolean getMissilesEnemyPiercing() {
+        return this.missilesEnemyPiercing;
     }
 
 

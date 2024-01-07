@@ -91,6 +91,16 @@ public class GameModelProxy implements IGameModel {
     }
 
     @Override
+    public void toggleMissilesWallPiercing() {
+        this.subject.toggleMissilesWallPiercing();
+    }
+
+    @Override
+    public void toggleMissilesEnemyPiercing() {
+        this.subject.toggleMissilesEnemyPiercing();;
+    }
+
+    @Override
     public void registerObserver(IObserver obs, Aspect aspect) {
         this.subject.registerObserver(obs, aspect);
     }
@@ -158,6 +168,14 @@ public class GameModelProxy implements IGameModel {
     @Override
     public IMovingStrategy getMissileMovingStrategy() {
         return this.subject.getMissileMovingStrategy();
+    }
+
+    @Override public boolean getMissilesWallPiercing() {
+        return this.subject.getMissilesWallPiercing();
+    }
+
+    @Override public boolean getMissilesEnemyPiercing() {
+        return this.subject.getMissilesEnemyPiercing();
     }
 
     @Override

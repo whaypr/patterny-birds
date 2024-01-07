@@ -52,6 +52,16 @@ public class GameInfo extends AbsGameInfo{
     }
 
     @Override
+    public boolean missilesWallPiercing() {
+        return this.gameModel.getMissilesWallPiercing();
+    }
+
+    @Override
+    public boolean missilesEnemyPiercing() {
+        return this.gameModel.getMissilesEnemyPiercing();
+    }
+
+    @Override
     public void acceptVisitor(IGameObjectsVisitor visitor) {
         visitor.visitGameInfo(this);
     }

@@ -52,6 +52,12 @@ public class GameController {
                             MvcGameConfig.DYNAMIC_SHOOTING_MODE_REMOVE_STEP)
                     );
                     break;
+                case MvcGameConfig.TOGGLE_MISSILES_WALL_PIERCING_KEY:
+                    this.model.registerCommand(new ToggleMissilesWallPiercingCommand(this.model));
+                    break;
+                case MvcGameConfig.TOGGLE_MISSILES_ENEMY_PIERCING_KEY:
+                    this.model.registerCommand(new ToggleMissilesEnemyPiercingCommand(this.model));
+                    break;
                 case MvcGameConfig.SHOOTING_MODE_KEY:
                     this.model.registerCommand(new ToggleCannonShootingModeCommand(this.model));
                     break;

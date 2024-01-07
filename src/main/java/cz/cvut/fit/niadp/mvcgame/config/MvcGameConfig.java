@@ -23,6 +23,8 @@ public class MvcGameConfig {
     public static final int DYNAMIC_SHOOTING_MODE_ADD_STEP = 1;
     public static final int DYNAMIC_SHOOTING_MODE_REMOVE_STEP = 1;
     public static final int DYNAMIC_SHOOTING_MODE_DEFAULT_NUMBER_OF_MISSILES = 3;
+    public static final boolean MISSILES_DEFAULT_WALL_PIERCING = false;
+    public static final boolean MISSILES_DEFAULT_ENEMY_PIERCING = false;
     public static final int POINTS_FOR_HIT = 1;
     public static final Vector CANNON_HITBOX = new Vector(24,68);
     public static final Vector MISSILE_HITBOX = new Vector(29,28);
@@ -41,6 +43,8 @@ public class MvcGameConfig {
     public static final String MOVING_STRATEGY_KEY = "S";
     public static final String DYNAMIC_SHOOTING_MODE_ADD_MISSILE_KEY = "D";
     public static final String DYNAMIC_SHOOTING_MODE_REMOVE_MISSILE_KEY = "C";
+    public static final String TOGGLE_MISSILES_WALL_PIERCING_KEY = "F";
+    public static final String TOGGLE_MISSILES_ENEMY_PIERCING_KEY = "V";
     public static final String SHOOTING_MODE_KEY = "X";
     public static final String UNDO_LAST_COMMAND_KEY = "R";
 

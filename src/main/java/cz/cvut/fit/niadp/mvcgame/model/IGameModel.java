@@ -26,6 +26,8 @@ public interface IGameModel extends IObservable {
     void toggleMovingStrategy();
     void addMissilesForDynamicShootingMode(int toAdd);
     void removeMissilesForDynamicShootingMode(int toRemove);
+    void toggleMissilesWallPiercing();
+    void toggleMissilesEnemyPiercing();
 
     /* INFO */
     int getScore();
@@ -39,6 +41,8 @@ public interface IGameModel extends IObservable {
     int getCannonDynamicShootingModeNumberOfMissiles();
     List<AbsMissile> getMissiles();
     IMovingStrategy getMissileMovingStrategy();
+    boolean getMissilesWallPiercing();
+    boolean getMissilesEnemyPiercing();
 
     /* MEMENTO */
     Object createMemento();

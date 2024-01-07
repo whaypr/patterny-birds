@@ -17,4 +17,6 @@ public abstract class AbsGameInfo extends GameObject {
     public abstract int score();
     public abstract int numberOfMissilesShot();
     public abstract int enemiesLeft();
+    public abstract boolean missilesWallPiercing();
+    public abstract boolean missilesEnemyPiercing();
 }
