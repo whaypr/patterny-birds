@@ -1,6 +1,8 @@
 package cz.cvut.fit.niadp.mvcgame.abstractfactory;
 
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.decorator.IgnoreEnemyCollisionsDecorator;
+import cz.cvut.fit.niadp.mvcgame.decorator.IgnoreWallCollisionsDecorator;
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollisionChecker;
@@ -44,13 +46,23 @@ public class GameObjectsFactoryA implements IGameObjectsFactory {
 
     @Override
     public MissileA createMissile(double initAngle, int initVelocity, long lifeTime) {
-        return new MissileA(
+        MissileA missile = new MissileA(
                 new Position(this.model.getCannonPosition().getX(), this.model.getCannonPosition().getY()),
                 initAngle,
                 initVelocity,
                 lifeTime,
                 this.model.getMissileMovingStrategy()
         );
+
+        ICollisionChecker cc = missile.getCollisionChecker();
+
+        if (this.model.getMissilesWallPiercing())
+            cc = new IgnoreWallCollisionsDecorator(cc);
+        if (this.model.getMissilesEnemyPiercing())
+            cc = new IgnoreEnemyCollisionsDecorator(cc);
+        missile.setCollisionChecker(cc);
+
+        return missile;
     }
 
     @Override

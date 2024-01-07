@@ -52,5 +52,9 @@ public abstract class AbsMissile extends LifetimeLimitedGameObject implements IC
         return this.collisionChecker;
     }
 
+    public void setCollisionChecker(ICollisionChecker collisionChecker) {
+        this.collisionChecker = collisionChecker;
+    }
+
     public abstract AbsMissile clone();
 }
