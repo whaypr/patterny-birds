@@ -12,7 +12,7 @@ public class AddMissilesForDynamicShootingModeCommand extends AbstractGameComman
     }
 
     @Override
-    protected void execute() {
+    public void innerExecute() {
         this.subject.addMissilesForDynamicShootingMode(toAdd);
     }
 }

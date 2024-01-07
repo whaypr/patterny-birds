@@ -8,7 +8,7 @@ public class CannonAimDownCommand extends AbstractGameCommand {
     }
 
     @Override
-    protected void execute() {
+    public void innerExecute() {
         this.subject.aimCannonDown();
     }
 }

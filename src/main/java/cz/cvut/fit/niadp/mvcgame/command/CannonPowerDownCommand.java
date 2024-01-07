@@ -8,7 +8,7 @@ public class CannonPowerDownCommand extends AbstractGameCommand {
     }
 
     @Override
-    protected void execute() {
+    public void innerExecute() {
         this.subject.cannonPowerDown();
     }
 }

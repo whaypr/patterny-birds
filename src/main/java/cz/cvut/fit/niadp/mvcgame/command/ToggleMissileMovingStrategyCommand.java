@@ -8,7 +8,7 @@ public class ToggleMissileMovingStrategyCommand extends AbstractGameCommand {
     }
 
     @Override
-    protected void execute() {
+    protected void innerExecute() {
         this.subject.toggleMovingStrategy();
     }
 }

@@ -12,7 +12,7 @@ public class RemoveMissilesForDynamicShootingModeCommand extends AbstractGameCom
     }
 
     @Override
-    protected void execute() {
+    public void innerExecute() {
         this.subject.removeMissilesForDynamicShootingMode(toRemove);
     }
 }

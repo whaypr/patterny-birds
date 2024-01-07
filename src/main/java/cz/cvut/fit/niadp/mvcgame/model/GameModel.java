@@ -1,5 +1,6 @@
 package cz.cvut.fit.niadp.mvcgame.model;
 
+import cz.cvut.fit.niadp.mvcgame.command.UndoableGameCommand;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
@@ -21,6 +22,7 @@ import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 import cz.cvut.fit.niadp.mvcgame.strategy.*;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 public class GameModel implements IGameModel {
 
@@ -28,10 +30,10 @@ public class GameModel implements IGameModel {
     private final IGameObjectsFactory gameObjectsFactory;
 
     private final AbsCannon cannon;
-    private final List<AbsMissile> missiles;
-    private final List<AbsEnemy> enemies;
+    private List<AbsMissile> missiles;
+    private List<AbsEnemy> enemies;
     private final List<AbsWall> walls;
-    private IMovingStrategy movingStrategy;
+    private IMovingStrategy missilesMovingStrategy;
 
     private int score;
     private int numberOfMissilesShot;
@@ -40,7 +42,7 @@ public class GameModel implements IGameModel {
     private AbsGameInfo gameInfo;
 
     private final Queue<AbstractGameCommand> unexecutedCommands;
-    private final Stack<AbstractGameCommand> executedCommands;
+    private final Stack<UndoableGameCommand> undoableCommands;
 
     public GameModel() {
         GameObjectsFactoryA.createInstance(this);
@@ -54,9 +56,9 @@ public class GameModel implements IGameModel {
         this.observers = new HashMap<>();
 
         this.unexecutedCommands = new LinkedBlockingQueue<>();
-        this.executedCommands = new Stack<>();
+        this.undoableCommands = new Stack<>();
 
-        this.movingStrategy = new SimpleMovingStrategy();
+        this.missilesMovingStrategy = new SimpleMovingStrategy();
 
         this.soundMaker = new SoundMaker();
         this.registerObserver(soundMaker, Aspect.MISSILE_SPAWN);
@@ -83,12 +85,10 @@ public class GameModel implements IGameModel {
         while (!this.unexecutedCommands.isEmpty()) {
             AbstractGameCommand command = this.unexecutedCommands.poll();
 
-            Memento currentState = (Memento) createMemento();
-            command.doExecute();
-            Memento followingState = (Memento) createMemento();
+            command.execute();
 
-            if (currentState != followingState) {
-                executedCommands.add(command);
+            if (command instanceof UndoableGameCommand) {
+                this.undoableCommands.add((UndoableGameCommand) command);
             }
         }
     }
@@ -100,9 +100,9 @@ public class GameModel implements IGameModel {
 
     @Override
     public void undoLastCommand() {
-        if (this.executedCommands.empty())
+        if (this.undoableCommands.empty())
             return;
-        this.executedCommands.pop().unExecute();
+        this.undoableCommands.pop().unExecute();
         // TODO add some way to notify only the correct aspect
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
         this.notifyObservers(Aspect.STATUS);
@@ -171,17 +171,17 @@ public class GameModel implements IGameModel {
 
     @Override
     public void toggleMovingStrategy() {
-        if (this.movingStrategy instanceof SimpleMovingStrategy) {
-            this.movingStrategy = new RealisticMovingStrategy();
+        if (this.missilesMovingStrategy instanceof SimpleMovingStrategy) {
+            this.missilesMovingStrategy = new RealisticMovingStrategy();
         }
-        else if (this.movingStrategy instanceof RealisticMovingStrategy) {
-            this.movingStrategy = new SinusoidalMovingStrategy();
+        else if (this.missilesMovingStrategy instanceof RealisticMovingStrategy) {
+            this.missilesMovingStrategy = new SinusoidalMovingStrategy();
         }
-        else if (this.movingStrategy instanceof SinusoidalMovingStrategy) {
-            this.movingStrategy = new CircularMovingStrategy();
+        else if (this.missilesMovingStrategy instanceof SinusoidalMovingStrategy) {
+            this.missilesMovingStrategy = new CircularMovingStrategy();
         }
-        else if (this.movingStrategy instanceof CircularMovingStrategy) {
-            this.movingStrategy = new SimpleMovingStrategy();
+        else if (this.missilesMovingStrategy instanceof CircularMovingStrategy) {
+            this.missilesMovingStrategy = new SimpleMovingStrategy();
         }
     }
 
@@ -388,35 +388,39 @@ public class GameModel implements IGameModel {
 
     @Override
     public IMovingStrategy getMissileMovingStrategy() {
-        return this.movingStrategy;
+        return this.missilesMovingStrategy;
     }
 
 
     /* MEMENTO */
 
     private static class Memento {
-        private int cannonPositionX;
-        private int cannonPositionY;
-        // TODO game model snapshot (enemies, gameInfo, strategy, state)
-
-        public boolean isEqual(Memento other) {
-            return     this.cannonPositionX == other.cannonPositionX
-                    && this.cannonPositionY == other.cannonPositionY;
-        }
+        private Position cannonPosition;
+        private List<AbsMissile> missiles;;
+        private List<AbsEnemy> enemies;;
+        private int score;
+        private int numberOfMissilesShot;
     }
 
     @Override
     public Object createMemento() {
-        Memento gameModelSnapshot = new Memento();
-        gameModelSnapshot.cannonPositionX = this.getCannonPosition().getX();
-        gameModelSnapshot.cannonPositionY = this.getCannonPosition().getY();
-        return gameModelSnapshot;
+        Memento memento = new Memento();
+        memento.cannonPosition = new Position(this.cannon.getPosition().getX(), this.cannon.getPosition().getY());
+        memento.missiles = this.missiles.stream().map(m -> this.gameObjectsFactory.createMissile(m.getInitAngle(), m.getInitVelocity(), MvcGameConfig.DEFAULT_MISSILE_LIFETIME)).collect(Collectors.toList());
+        memento.enemies = this.enemies.stream().map(e -> this.gameObjectsFactory.createEnemy(e.getPosition(), e.getType())).collect(Collectors.toList());
+        memento.score = this.score;
+        memento.numberOfMissilesShot = this.numberOfMissilesShot;
+        return memento;
     }
 
     @Override
     public void setMemento(Object memento) {
-        Memento gameModelSnapshot = (Memento) memento;
-        this.cannon.getPosition().setX(gameModelSnapshot.cannonPositionX);
-        this.cannon.getPosition().setY(gameModelSnapshot.cannonPositionY);
+        Memento memento_ = (Memento) memento;
+        this.cannon.getPosition().setX(memento_.cannonPosition.getX());
+        this.cannon.getPosition().setY(memento_.cannonPosition.getY());
+        this.missiles = memento_.missiles;
+        this.enemies = memento_.enemies;
+        this.score = memento_.score;
+        this.numberOfMissilesShot = memento_.numberOfMissilesShot;
     }
 }
