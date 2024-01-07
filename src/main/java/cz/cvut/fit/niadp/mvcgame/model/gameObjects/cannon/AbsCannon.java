@@ -1,6 +1,8 @@
 package cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon;
 
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.collisions.CollisionChecker;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.collisions.ICollidable;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
 import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;
@@ -11,7 +13,9 @@ import cz.cvut.fit.niadp.mvcgame.visitor.IGameObjectsVisitor;
 
 import java.util.List;
 
-public abstract class AbsCannon extends GameObject {
+public abstract class AbsCannon extends GameObject implements ICollidable {
+
+    private final CollisionChecker collisionChecker;
 
     protected IShootingMode shootingMode;
     protected static IShootingMode SINGLE_SHOOTING_MODE = new SingleShootingMode();
@@ -20,6 +24,10 @@ public abstract class AbsCannon extends GameObject {
 
     protected int power;
     protected double angle;
+
+    protected AbsCannon() {
+        this.collisionChecker = new CollisionChecker(this, MvcGameConfig.CANNON_HITBOX);
+    }
 
     public int getPower() {
         return power;
@@ -47,6 +55,11 @@ public abstract class AbsCannon extends GameObject {
     @Override
     public void acceptVisitor(IGameObjectsVisitor visitor) {
         visitor.visitCannon(this);
+    }
+
+    @Override
+    public CollisionChecker getCollisionChecker() {
+        return this.collisionChecker;
     }
 
     public abstract void toggleShootingMode();

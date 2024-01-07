@@ -1,6 +1,7 @@
 package cz.cvut.fit.niadp.mvcgame.config;
 
 import cz.cvut.fit.niadp.mvcgame.model.Position;
+import cz.cvut.fit.niadp.mvcgame.model.Vector;
 
 public class MvcGameConfig {
 
@@ -22,6 +23,11 @@ public class MvcGameConfig {
     public static final int DYNAMIC_SHOOTING_MODE_ADD_STEP = 1;
     public static final int DYNAMIC_SHOOTING_MODE_REMOVE_STEP = 1;
     public static final int DYNAMIC_SHOOTING_MODE_DEFAULT_NUMBER_OF_MISSILES = 3;
+    public static final int POINTS_FOR_HIT = 1;
+    public static final Vector CANNON_HITBOX = new Vector(24,68);
+    public static final Vector MISSILE_HITBOX = new Vector(29,28);
+    public static final Vector ENEMY_HITBOX = new Vector(29,25);
+    public static final Vector WALL_HITBOX = new Vector(32,32);
 
     /* CONTROLS */
     public static final String UP_KEY = "UP";
@@ -44,6 +50,8 @@ public class MvcGameConfig {
     public static final String CANNON_MOVE_SOUND_RESOURCE = "sounds/canonMove.wav";
     public static final String MISSILE_IMAGE_RESOURCE = "images/missile.png";
     public static final String MISSILE_LAUNCH_SOUND_RESOURCE = "sounds/missileLaunch.wav";
+    public static final String MISSILE_WALL_HIT_SOUND_RESOURCE = "sounds/wallHit.wav";
+    public static final String MISSILE_ENEMY_HIT_SOUND_RESOURCE = "sounds/enemyHit.wav";
     public static final String ENEMY_BASIC_IMAGE_RESOURCE = "images/enemy_basic.png";
     public static final String ENEMY_WITH_HELMET_IMAGE_RESOURCE = "images/enemy_with_helmet.png";
     public static final String WALL_IMAGE_RESOURCE = "images/wall.png";

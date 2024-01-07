@@ -18,6 +18,8 @@ public class CannonA extends AbsCannon {
     private final List<AbsMissile> shootingBatch;
 
     public CannonA(Position initPosition, IGameObjectsFactory gameObjectsFactory) {
+        super();
+
         this.position = initPosition;
         this.gameObjectsFactory = gameObjectsFactory;
 
