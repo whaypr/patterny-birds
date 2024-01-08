@@ -9,7 +9,7 @@ public class MvcGameConfig {
     public static final String GAME_TITLE = "The NI-ADP MvcGame";
     public static final int MAX_X = 1474; //1920;
     public static final int MAX_Y = 829; //1080;
-    public static final int MOVE_STEP = 3;
+    public static final int MOVE_STEP = 10;
     public static final int CANNON_POS_X = 200;
     public static final int CANNON_POS_Y = MAX_Y / 2;
     public static final double ANGLE_STEP = Math.PI / 18;
@@ -40,12 +40,12 @@ public class MvcGameConfig {
     public static final String AIM_DOWN_KEY = "RIGHT";
     public static final String POWER_UP_KEY = "A";
     public static final String POWER_DOWN_KEY = "Y";
-    public static final String MOVING_STRATEGY_KEY = "S";
-    public static final String DYNAMIC_SHOOTING_MODE_ADD_MISSILE_KEY = "D";
-    public static final String DYNAMIC_SHOOTING_MODE_REMOVE_MISSILE_KEY = "C";
+    public static final String MOVING_STRATEGY_KEY = "D";
+    public static final String DYNAMIC_SHOOTING_MODE_ADD_MISSILE_KEY = "S";
+    public static final String DYNAMIC_SHOOTING_MODE_REMOVE_MISSILE_KEY = "X";
     public static final String TOGGLE_MISSILES_WALL_PIERCING_KEY = "F";
     public static final String TOGGLE_MISSILES_ENEMY_PIERCING_KEY = "V";
-    public static final String SHOOTING_MODE_KEY = "X";
+    public static final String SHOOTING_MODE_KEY = "C";
     public static final String UNDO_LAST_COMMAND_KEY = "R";
 
     /* RESOURCES */
