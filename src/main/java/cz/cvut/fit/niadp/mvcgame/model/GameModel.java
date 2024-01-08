@@ -226,6 +226,8 @@ public class GameModel implements IGameModel {
 
     @Override
     public void notifyObservers(Aspect aspect) {
+        if (!this.observers.containsKey(aspect))
+            return;
         this.observers.get(aspect).forEach(o -> o.update(aspect));
     }
 
