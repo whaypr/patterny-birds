@@ -132,7 +132,6 @@ public class GameModel implements IGameModel {
             return;
         }
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        this.notifyObservers(Aspect.CANNON_MOVE);
     }
 
     @Override
@@ -143,7 +142,6 @@ public class GameModel implements IGameModel {
             return;
         }
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        this.notifyObservers(Aspect.CANNON_MOVE);
     }
 
     @Override

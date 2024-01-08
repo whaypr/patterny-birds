@@ -6,5 +6,4 @@ public enum Aspect {
     MISSILE_SPAWN,
     MISSILE_WALL_HIT,
     MISSILE_ENEMY_HIT,
-    CANNON_MOVE,
 }
