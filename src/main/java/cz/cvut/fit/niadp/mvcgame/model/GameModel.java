@@ -432,7 +432,7 @@ public class GameModel implements IGameModel {
     @Override
     public Object createMemento() {
         Memento memento = new Memento();
-        memento.cannonPosition = this.cannon.getPosition().clone();
+        memento.cannonPosition = this.getCannonPosition().clone();
         memento.missiles = this.missiles.stream().map(AbsMissile::clone).collect(Collectors.toList());
         memento.enemies = this.enemies.stream().map(AbsEnemy::clone).collect(Collectors.toList());
         memento.score = this.score;
@@ -443,8 +443,8 @@ public class GameModel implements IGameModel {
     @Override
     public void setMemento(Object memento) {
         Memento memento_ = (Memento) memento;
-        this.cannon.getPosition().setX(memento_.cannonPosition.getX());
-        this.cannon.getPosition().setY(memento_.cannonPosition.getY());
+        this.getCannonPosition().setX(memento_.cannonPosition.getX());
+        this.getCannonPosition().setY(memento_.cannonPosition.getY());
         this.missiles = memento_.missiles;
         this.enemies = memento_.enemies;
         this.score = memento_.score;

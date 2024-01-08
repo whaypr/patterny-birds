@@ -2,13 +2,14 @@ package cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon;
 
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
-import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
+import cz.cvut.fit.niadp.mvcgame.iterator.IIterator;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.Vector;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
+import cz.cvut.fit.niadp.mvcgame.state.DynamicShootingMode;
+import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CannonA extends AbsCannon {
@@ -16,7 +17,9 @@ public class CannonA extends AbsCannon {
     private final IGameObjectsFactory gameObjectsFactory;
     private final List<AbsMissile> shootingBatch;
 
-    public CannonA(Position initPosition, IGameObjectsFactory gameObjectsFactory) {
+    public CannonA(Position initPosition,
+                   IIterator<IShootingMode> shootingModeIterator, DynamicShootingMode dynamicShootingMode,
+                   IGameObjectsFactory gameObjectsFactory) {
         super();
 
         this.position = initPosition;
@@ -27,9 +30,8 @@ public class CannonA extends AbsCannon {
 
         this.shootingBatch = new ArrayList<>();
 
-        this.shootingModeIterator = new CircularIterator<>(
-                Arrays.asList(SINGLE_SHOOTING_MODE, DOUBLE_SHOOTING_MODE, DYNAMIC_SHOOTING_MODE)
-        );
+        this.DYNAMIC_SHOOTING_MODE = dynamicShootingMode;
+        this.shootingModeIterator = shootingModeIterator;
         this.shootingMode = this.shootingModeIterator.next();
     }
 

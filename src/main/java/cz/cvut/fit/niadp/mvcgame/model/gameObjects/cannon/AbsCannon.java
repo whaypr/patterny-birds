@@ -1,17 +1,15 @@
 package cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon;
 
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
-import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
+import cz.cvut.fit.niadp.mvcgame.iterator.IIterator;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionChecker;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionResponse;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollidable;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollisionChecker;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
-import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;
 import cz.cvut.fit.niadp.mvcgame.state.DynamicShootingMode;
 import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
-import cz.cvut.fit.niadp.mvcgame.state.SingleShootingMode;
 import cz.cvut.fit.niadp.mvcgame.visitor.IGameObjectsVisitor;
 
 import java.util.List;
@@ -20,11 +18,9 @@ public abstract class AbsCannon extends GameObject implements ICollidable {
 
     private final ICollisionChecker collisionChecker;
 
-    protected CircularIterator<IShootingMode> shootingModeIterator;
+    protected IIterator<IShootingMode> shootingModeIterator;
     protected IShootingMode shootingMode;
-    protected static IShootingMode SINGLE_SHOOTING_MODE = new SingleShootingMode();
-    protected static IShootingMode DOUBLE_SHOOTING_MODE = new DoubleShootingMode();
-    protected static DynamicShootingMode DYNAMIC_SHOOTING_MODE = new DynamicShootingMode(MvcGameConfig.DYNAMIC_SHOOTING_MODE_DEFAULT_NUMBER_OF_MISSILES);
+    protected DynamicShootingMode DYNAMIC_SHOOTING_MODE;
 
     protected int power;
     protected double angle;

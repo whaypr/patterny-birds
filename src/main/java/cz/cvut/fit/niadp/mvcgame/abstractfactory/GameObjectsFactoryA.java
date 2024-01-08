@@ -3,6 +3,7 @@ package cz.cvut.fit.niadp.mvcgame.abstractfactory;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 import cz.cvut.fit.niadp.mvcgame.decorator.IgnoreEnemyCollisionsDecorator;
 import cz.cvut.fit.niadp.mvcgame.decorator.IgnoreWallCollisionsDecorator;
+import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollisionChecker;
@@ -15,6 +16,11 @@ import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyA;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.wall.AbsWall;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.wall.WallA;
+import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;
+import cz.cvut.fit.niadp.mvcgame.state.DynamicShootingMode;
+import cz.cvut.fit.niadp.mvcgame.state.SingleShootingMode;
+
+import java.util.Arrays;
 
 public class GameObjectsFactoryA implements IGameObjectsFactory {
     private final IGameModel model;
@@ -41,7 +47,17 @@ public class GameObjectsFactoryA implements IGameObjectsFactory {
 
     @Override
     public CannonA createCannon() {
-        return new CannonA(new Position(MvcGameConfig.CANNON_POS_X, MvcGameConfig.CANNON_POS_Y), this);
+        SingleShootingMode single = new SingleShootingMode();
+        DoubleShootingMode dbl = new DoubleShootingMode();
+        DynamicShootingMode dynamic = new DynamicShootingMode(MvcGameConfig.DYNAMIC_SHOOTING_MODE_DEFAULT_NUMBER_OF_MISSILES);
+
+        return new CannonA(
+                new Position(MvcGameConfig.CANNON_POS_X, MvcGameConfig.CANNON_POS_Y),
+                new CircularIterator<>(
+                        Arrays.asList(single, dbl, dynamic)
+                ),
+                dynamic,
+                this);
     }
 
     @Override
