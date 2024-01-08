@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.stream.IntStream;
 
-public class GameModelReflectionTest {
+public class GameModelMissilesTest {
 
     private static final String MOVE_MISSILES_METHOD_NAME = "moveMissiles";
     private static final int ITERATION_START_CONST = 1;
@@ -18,15 +18,16 @@ public class GameModelReflectionTest {
     public void moveMissilesTest() throws NoSuchMethodException {
         GameModel model = new GameModel();
         Method method = model.getClass().getDeclaredMethod(MOVE_MISSILES_METHOD_NAME);
-        method.setAccessible(true);
-        IntStream.rangeClosed(ITERATION_START_CONST, MISSILE_COUNT).forEach(i->model.cannonShoot());
-        Assert.assertEquals(MISSILE_COUNT, model.getMissiles().size());
-        IntStream.rangeClosed(ITERATION_START_CONST, MOVE_COUNT).forEach(i-> {
+
+        IntStream.rangeClosed(ITERATION_START_CONST, MOVE_COUNT).forEach(i -> {
             try {
                 method.invoke(model);
             } catch (IllegalAccessException | InvocationTargetException ignored) {}
         });
-        method.setAccessible(false);
         Assert.assertEquals(EXPECTED_MISSILES_COUNT, model.getMissiles().size());
+
+        method.setAccessible(true);
+        IntStream.rangeClosed(ITERATION_START_CONST, MISSILE_COUNT).forEach(i -> model.cannonShoot());
+        Assert.assertEquals(MISSILE_COUNT, model.getMissiles().size());
     }
 }
