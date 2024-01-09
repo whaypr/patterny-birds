@@ -9,7 +9,6 @@ import cz.cvut.fit.niadp.mvcgame.model.GameModel;
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.proxy.GameModelProxy;
 import cz.cvut.fit.niadp.mvcgame.view.GameView;
-import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 
 public class MvcGame {
 
@@ -19,8 +18,7 @@ public class MvcGame {
     private GameController controller;
 
     public void init() {
-        GameObjectsSoundMaker soundMaker = new GameObjectsSoundMaker();
-        this.model = new GameModelProxy(new GameModel(soundMaker));
+        this.model = new GameModelProxy(new GameModel());
         this.view = new GameView(model);
         this.controller = this.view.getController();
     }

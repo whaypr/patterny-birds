@@ -1,24 +1,40 @@
 package cz.cvut.fit.niadp.mvcgame.abstractfactory;
 
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.decorator.IgnoreEnemyCollisionsDecorator;
+import cz.cvut.fit.niadp.mvcgame.decorator.IgnoreWallCollisionsDecorator;
+import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.CannonA;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.MissileA;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.ICollisionChecker;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo.AbsGameInfo;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.CannonA;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo.GameInfo;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.MissileA;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyA;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.wall.AbsWall;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.wall.WallA;
+import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;
+import cz.cvut.fit.niadp.mvcgame.state.DynamicShootingMode;
+import cz.cvut.fit.niadp.mvcgame.state.SingleShootingMode;
+
+import java.util.Arrays;
 
 public class GameObjectsFactoryA implements IGameObjectsFactory {
-    private static IGameModel model;
-    // volatile so that double check lock would work correctly.
-    private static volatile GameObjectsFactoryA instance;
+    private final IGameModel model;
 
-    private GameObjectsFactoryA() {}
+    private static GameObjectsFactoryA instance;
 
-    public static void createInstance(IGameModel m) {
-        model = m;
+    private GameObjectsFactoryA(IGameModel model) {
+        this.model = model;
+    }
 
+    public static void createInstance(IGameModel model) {
         synchronized(GameObjectsFactoryA.class) {
             if (instance == null) {
-                instance = new GameObjectsFactoryA();
+                instance = new GameObjectsFactoryA(model);
             }
         }
     }
@@ -31,16 +47,55 @@ public class GameObjectsFactoryA implements IGameObjectsFactory {
 
     @Override
     public CannonA createCannon() {
-        return new CannonA(new Position(MvcGameConfig.CANNON_POS_X, MvcGameConfig.CANNON_POS_Y), this);
+        SingleShootingMode single = new SingleShootingMode();
+        DoubleShootingMode dbl = new DoubleShootingMode();
+        DynamicShootingMode dynamic = new DynamicShootingMode(MvcGameConfig.DYNAMIC_SHOOTING_MODE_DEFAULT_NUMBER_OF_MISSILES);
+
+        return new CannonA(
+                new Position(MvcGameConfig.CANNON_POS_X, MvcGameConfig.CANNON_POS_Y),
+                new CircularIterator<>(
+                        Arrays.asList(single, dbl, dynamic)
+                ),
+                dynamic,
+                this);
     }
 
     @Override
-    public MissileA createMissile(double initAngle, int initVelocity) {
-        return new MissileA(
+    public MissileA createMissile(double initAngle, int initVelocity, long lifeTime) {
+        MissileA missile = new MissileA(
                 new Position(this.model.getCannonPosition().getX(), this.model.getCannonPosition().getY()),
                 initAngle,
                 initVelocity,
-                this.model.getMovingStrategy()
+                lifeTime,
+                this.model.getMissileMovingStrategy()
         );
+
+        ICollisionChecker cc = missile.getCollisionChecker();
+
+        if (this.model.getMissilesWallPiercing())
+            cc = new IgnoreWallCollisionsDecorator(cc);
+        if (this.model.getMissilesEnemyPiercing())
+            cc = new IgnoreEnemyCollisionsDecorator(cc);
+        missile.setCollisionChecker(cc);
+
+        return missile;
+    }
+
+    @Override
+    public AbsEnemy createEnemy(Position position, EnemyType type) {
+        return new EnemyA(
+                position,
+                type
+        );
+    }
+
+    @Override
+    public AbsWall createWall(Position position) {
+        return new WallA(position);
+    }
+
+    @Override
+    public AbsGameInfo createGameInfo() {
+        return new GameInfo(this.model);
     }
 }

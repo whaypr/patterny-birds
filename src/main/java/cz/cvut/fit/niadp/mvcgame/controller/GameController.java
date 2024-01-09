@@ -1,7 +1,6 @@
 package cz.cvut.fit.niadp.mvcgame.controller;
 
-import cz.cvut.fit.niadp.mvcgame.command.MoveCannonDownCommand;
-import cz.cvut.fit.niadp.mvcgame.command.MoveCannonUpCommand;
+import cz.cvut.fit.niadp.mvcgame.command.*;
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
 
@@ -18,37 +17,49 @@ public class GameController {
         for(String code : pressedKeysCodes) {
             switch(code) {
                 case MvcGameConfig.UP_KEY:
-                    this.model.registerCommand(new MoveCannonUpCommand(this.model));
+                    this.model.registerCommand(new CannonMoveUpCommand(this.model));
                     break;
                 case MvcGameConfig.DOWN_KEY:
-                    this.model.registerCommand(new MoveCannonDownCommand(this.model));
+                    this.model.registerCommand(new CannonMoveDownCommand(this.model));
                     break;
                 case MvcGameConfig.SHOOT_KEY:
-                    this.model.cannonShoot();
+                    this.model.registerCommand(new CannonShootCommand(this.model));
                     break;
                 case MvcGameConfig.AIM_UP_KEY:
-                    this.model.aimCannonUp();
+                    this.model.registerCommand(new CannonAimUpCommand(this.model));
                     break;
                 case MvcGameConfig.AIM_DOWN_KEY:
-                    this.model.aimCannonDown();
+                    this.model.registerCommand(new CannonAimDownCommand(this.model));
                     break;
                 case MvcGameConfig.POWER_UP_KEY:
-                    this.model.cannonPowerUp();
+                    this.model.registerCommand(new CannonPowerUpCommand(this.model));
                     break;
                 case MvcGameConfig.POWER_DOWN_KEY:
-                    this.model.cannonPowerDown();
+                    this.model.registerCommand(new CannonPowerDownCommand(this.model));
                     break;
                 case MvcGameConfig.MOVING_STRATEGY_KEY:
-                    this.model.toggleMovingStrategy();
+                    this.model.registerCommand(new ToggleMissileMovingStrategyCommand(this.model));
                     break;
                 case MvcGameConfig.DYNAMIC_SHOOTING_MODE_ADD_MISSILE_KEY:
-                    this.model.addMissilesForDynamicShootingMode(1);
+                    this.model.registerCommand(new AddMissilesForDynamicShootingModeCommand(
+                            this.model,
+                            MvcGameConfig.DYNAMIC_SHOOTING_MODE_ADD_STEP)
+                    );
                     break;
                 case MvcGameConfig.DYNAMIC_SHOOTING_MODE_REMOVE_MISSILE_KEY:
-                    this.model.removeMissilesForDynamicShootingMode(1);
+                    this.model.registerCommand(new RemoveMissilesForDynamicShootingModeCommand(
+                            this.model,
+                            MvcGameConfig.DYNAMIC_SHOOTING_MODE_REMOVE_STEP)
+                    );
+                    break;
+                case MvcGameConfig.TOGGLE_MISSILES_WALL_PIERCING_KEY:
+                    this.model.registerCommand(new ToggleMissilesWallPiercingCommand(this.model));
+                    break;
+                case MvcGameConfig.TOGGLE_MISSILES_ENEMY_PIERCING_KEY:
+                    this.model.registerCommand(new ToggleMissilesEnemyPiercingCommand(this.model));
                     break;
                 case MvcGameConfig.SHOOTING_MODE_KEY:
-                    this.model.toggleShootingMode();
+                    this.model.registerCommand(new ToggleCannonShootingModeCommand(this.model));
                     break;
                 case MvcGameConfig.UNDO_LAST_COMMAND_KEY:
                     this.model.undoLastCommand();

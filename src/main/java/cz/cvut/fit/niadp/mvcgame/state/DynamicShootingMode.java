@@ -1,7 +1,7 @@
 package cz.cvut.fit.niadp.mvcgame.state;
 
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 
 public class DynamicShootingMode implements IShootingMode {
 
@@ -11,9 +11,14 @@ public class DynamicShootingMode implements IShootingMode {
         this.numberOfMissiles = numberOfMissiles;
     }
 
+    public int getNumberOfMissiles() {
+        return numberOfMissiles;
+    }
+
     @Override
     public String getName() {
-        return DynamicShootingMode.class.getSimpleName();
+        return DynamicShootingMode.class.getSimpleName()
+                .replace("ShootingMode", "");
     }
 
     @Override

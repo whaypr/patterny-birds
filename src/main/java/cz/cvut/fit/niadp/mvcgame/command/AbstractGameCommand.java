@@ -5,16 +5,15 @@ import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 public abstract class AbstractGameCommand {
 
     protected IGameModel subject;
-    private Object memento;
 
-    protected abstract void execute();
+    protected abstract void innerExecute();
 
-    public void doExecute() {
-        this.memento = this.subject.createMemento();
-        this.execute();
+    public AbstractGameCommand(IGameModel model) {
+        this.subject = model;
     }
 
-    public void unExecute() {
-        this.subject.setMemento(this.memento);
+    public void execute() {
+        innerExecute();
     }
+
 }

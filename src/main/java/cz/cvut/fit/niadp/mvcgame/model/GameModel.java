@@ -1,53 +1,97 @@
 package cz.cvut.fit.niadp.mvcgame.model;
 
+import cz.cvut.fit.niadp.mvcgame.command.UndoableGameCommand;
+import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.iterator.CircularIterator;
+import cz.cvut.fit.niadp.mvcgame.model.collisions.CollisionResponse;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.AbsEnemy;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.enemy.EnemyType;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.gameInfo.AbsGameInfo;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.wall.AbsWall;
+import cz.cvut.fit.niadp.mvcgame.observer.SoundMaker;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.GameObjectsFactoryA;
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
 import cz.cvut.fit.niadp.mvcgame.command.AbstractGameCommand;
-import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.*;
 import cz.cvut.fit.niadp.mvcgame.observer.Aspect;
-import cz.cvut.fit.niadp.mvcgame.observer.IObservable;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
 
 import java.util.*;
 
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
+import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 import cz.cvut.fit.niadp.mvcgame.strategy.*;
-import cz.cvut.fit.niadp.mvcgame.visitor.GameObjectsSoundMaker;
 
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class GameModel implements IGameModel {
 
-    private final GameObjectsSoundMaker soundMaker;
-
     private final Map<Aspect, Set<IObserver>> observers;
-    private IGameObjectsFactory gameObjectsFactory;
+    private final IGameObjectsFactory gameObjectsFactory;
 
     private final AbsCannon cannon;
-    private final List<AbsMissile> missiles;
-    private IMovingStrategy movingStrategy;
+    private List<AbsMissile> missiles;
+    private List<AbsEnemy> enemies;
+    private final List<AbsWall> walls;
+
+    private CircularIterator<IMovingStrategy> missileMovingStrategyIterator;
+    private IMovingStrategy missilesMovingStrategy;
+
+    private boolean missilesWallPiercing;
+    private boolean missilesEnemyPiercing;
+
+    private int score;
+    private int numberOfMissilesShot;
+
+    private SoundMaker soundMaker;
+    private AbsGameInfo gameInfo;
 
     private final Queue<AbstractGameCommand> unexecutedCommands;
-    private final Stack<AbstractGameCommand> executedCommands;
+    private final Stack<UndoableGameCommand> undoableCommands;
 
-    public GameModel(GameObjectsSoundMaker soundMaker) {
-        this.observers = new HashMap<>();
+    public GameModel() {
         GameObjectsFactoryA.createInstance(this);
         this.gameObjectsFactory = GameObjectsFactoryA.getInstance();
+        this.gameInfo = this.gameObjectsFactory.createGameInfo();
         this.cannon = this.gameObjectsFactory.createCannon();
         this.missiles = new ArrayList<>();
-        this.movingStrategy = new SimpleMovingStrategy();
-        this.soundMaker = soundMaker;
+        this.enemies = createEnemies();
+        this.walls = createWalls();
+
+        this.observers = new HashMap<>();
+
         this.unexecutedCommands = new LinkedBlockingQueue<>();
-        this.executedCommands = new Stack<>();
+        this.undoableCommands = new Stack<>();
+
+        this.missileMovingStrategyIterator = new CircularIterator<>(Arrays.asList(
+                new SimpleMovingStrategy(),
+                new RealisticMovingStrategy(),
+                new SinusoidalMovingStrategy(),
+                new CircularMovingStrategy())
+        );
+        this.missilesMovingStrategy = this.missileMovingStrategyIterator.next();
+
+        this.soundMaker = new SoundMaker();
+        this.registerObserver(soundMaker, Aspect.MISSILE_SPAWN);
+        this.registerObserver(soundMaker, Aspect.MISSILE_WALL_HIT);
+        this.registerObserver(soundMaker, Aspect.MISSILE_ENEMY_HIT);
+
+        this.missilesWallPiercing = MvcGameConfig.MISSILES_DEFAULT_WALL_PIERCING;
+        this.missilesEnemyPiercing = MvcGameConfig.MISSILES_DEFAULT_ENEMY_PIERCING;
+
+        this.score = 0;
+        this.numberOfMissilesShot = 0;
     }
 
+    @Override
     public void update() {
         this.executeCommands();
         this.moveMissiles();
+        this.handleMissilesWithWallsCollisions();
+        this.handleMissilesWithEnemiesCollisions();
+        this.checkLifeTimeLimitedGameObjects();
     }
 
 
@@ -56,8 +100,12 @@ public class GameModel implements IGameModel {
     private void executeCommands() {
         while (!this.unexecutedCommands.isEmpty()) {
             AbstractGameCommand command = this.unexecutedCommands.poll();
-            command.doExecute();
-            executedCommands.add(command);
+
+            command.execute();
+
+            if (command instanceof UndoableGameCommand) {
+                this.undoableCommands.add((UndoableGameCommand) command);
+            }
         }
     }
 
@@ -68,82 +116,96 @@ public class GameModel implements IGameModel {
 
     @Override
     public void undoLastCommand() {
-        if (this.executedCommands.empty())
+        if (this.undoableCommands.empty())
             return;
-        this.executedCommands.pop().unExecute();
+        this.undoableCommands.pop().unExecute();
         // TODO add some way to notify only the correct aspect
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        this.notifyObservers(Aspect.OBJECT_ANGLES);
         this.notifyObservers(Aspect.STATUS);
     }
 
+    @Override
     public void moveCannonUp() {
         this.cannon.moveUp();
+        if (isCannonTouchingWall()) {
+            this.cannon.moveDown();
+            return;
+        }
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
     }
 
+    @Override
     public void moveCannonDown() {
         this.cannon.moveDown();
+        if (isCannonTouchingWall()) {
+            this.cannon.moveUp();
+            return;
+        }
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
-        cannon.acceptVisitor(soundMaker); // soundMaker.visitCannon(cannon);
     }
 
+    @Override
     public void aimCannonUp() {
         this.cannon.aimUp();
-        this.notifyObservers(Aspect.OBJECT_ANGLES);
     }
 
+    @Override
     public void aimCannonDown() {
         this.cannon.aimDown();
-        this.notifyObservers(Aspect.OBJECT_ANGLES);
     }
 
+    @Override
     public void cannonPowerUp() {
         this.cannon.powerUp();
         this.notifyObservers(Aspect.STATUS);
     }
 
+    @Override
     public void cannonPowerDown() {
         this.cannon.powerDown();
         this.notifyObservers(Aspect.STATUS);
     }
 
+    @Override
     public void cannonShoot() {
-        List<AbsMissile> missiles = this.cannon.shoot();
-        this.missiles.addAll(missiles);
-        this.notifyObservers(Aspect.OBJECT_POSITIONS);
+        List<AbsMissile> newMissiles = this.cannon.shoot();
 
-        // play sound only once even if multiple missiles are shot
-        missiles.get(0).acceptVisitor(soundMaker); // soundMaker.visitMissile(missiles.get(0));
+        this.missiles.addAll(newMissiles);
+        this.numberOfMissilesShot += newMissiles.size();
+
+        this.notifyObservers(Aspect.OBJECT_POSITIONS);
+        this.notifyObservers(Aspect.MISSILE_SPAWN);
     }
 
+    @Override
     public void toggleShootingMode() {
         this.cannon.toggleShootingMode();
         this.notifyObservers(Aspect.STATUS);
     }
 
+    @Override
     public void toggleMovingStrategy() {
-        if (this.movingStrategy instanceof SimpleMovingStrategy) {
-            this.movingStrategy = new RealisticMovingStrategy();
-        }
-        else if (this.movingStrategy instanceof RealisticMovingStrategy) {
-            this.movingStrategy = new SinusoidalMovingStrategy();
-        }
-        else if (this.movingStrategy instanceof SinusoidalMovingStrategy) {
-            this.movingStrategy = new CircularMovingStrategy();
-        }
-        else if (this.movingStrategy instanceof CircularMovingStrategy) {
-            this.movingStrategy = new SimpleMovingStrategy();
-        }
+        this.missilesMovingStrategy = this.missileMovingStrategyIterator.next();
     }
 
+    @Override
     public void addMissilesForDynamicShootingMode(int toAdd) {
         cannon.addMissilesForDynamicShootingMode(toAdd);
     }
 
+    @Override
     public void removeMissilesForDynamicShootingMode(int toRemove) {
         cannon.removeMissilesForDynamicShootingMode(toRemove);
+    }
+
+    @Override
+    public void toggleMissilesWallPiercing() {
+        this.missilesWallPiercing = !this.missilesWallPiercing;
+    }
+
+    @Override
+    public void toggleMissilesEnemyPiercing() {
+        this.missilesEnemyPiercing = !this.missilesEnemyPiercing;
     }
 
 
@@ -164,59 +226,228 @@ public class GameModel implements IGameModel {
 
     @Override
     public void notifyObservers(Aspect aspect) {
+        if (!this.observers.containsKey(aspect))
+            return;
         this.observers.get(aspect).forEach(o -> o.update(aspect));
     }
 
 
     /* HELPERS, MODEL INFO */
 
+    private List<AbsEnemy> createEnemies() {
+        List<AbsEnemy> enemies = new ArrayList<>();
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(300, 500),
+                EnemyType.BASIC
+        ));
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(500, 600),
+                EnemyType.WITH_HELMET
+        ));
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(700, 300),
+                EnemyType.WITH_HELMET
+        ));
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(900, 250),
+                EnemyType.WITH_HELMET
+        ));
+        enemies.add(this.gameObjectsFactory.createEnemy(
+                new Position(1050, 400),
+                EnemyType.WITH_HELMET
+        ));
+        return enemies;
+    }
+
+    private List<AbsWall> createWalls() {
+        List<AbsWall> walls = new ArrayList<>();
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(200, 100)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(250, 500)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 132)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 164)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 196)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 228)
+        ));
+        walls.add(this.gameObjectsFactory.createWall(
+                new Position(800, 260)
+        ));
+        return walls;
+    }
+
     private void moveMissiles() {
         this.missiles.forEach(AbsMissile::move);
-        this.destroyMissiles();
         this.notifyObservers(Aspect.OBJECT_POSITIONS);
     }
 
-    private void destroyMissiles() {
-        this.missiles.removeAll(
-                this.missiles.stream().filter(missile -> missile.getPosition().getX() > MvcGameConfig.MAX_X).toList()
-        );
+    private void checkLifeTimeLimitedGameObjects() {
+        List<AbsMissile> toDestroy = this.missiles.stream().filter(LifetimeLimitedGameObject::shouldBeDestroyed).toList();
+        this.missiles.removeAll(toDestroy);
+        toDestroy.forEach(m -> m = null);
     }
 
+    private void handleMissilesWithWallsCollisions() {
+        List<AbsMissile> missilesToRemove = new ArrayList<>();
+        for (AbsMissile missile: this.missiles) {
+            for (AbsWall wall: this.walls) {
+                CollisionResponse response = missile.getCollisionChecker().checkAndRespond(wall);
+                if (response == CollisionResponse.DESTROY) {
+                    missilesToRemove.add(missile);
+                }
+            }
+        }
+        if (!missilesToRemove.isEmpty())
+            this.notifyObservers(Aspect.MISSILE_WALL_HIT);
+        this.missiles.removeAll(missilesToRemove);
+    }
+
+    private void handleMissilesWithEnemiesCollisions() {
+        List<AbsEnemy> hitEnemies = new ArrayList<>();
+        List<AbsMissile> missilesToRemove = new ArrayList<>();
+        for (AbsMissile missile: this.missiles) {
+            for (AbsEnemy enemy: this.enemies) {
+                CollisionResponse response = missile.getCollisionChecker().checkAndRespond(enemy);
+                if (response != CollisionResponse.NO_COLLISION) {
+                    score += MvcGameConfig.POINTS_FOR_HIT;
+                    hitEnemies.add(enemy);
+                }
+                if (response == CollisionResponse.DESTROY) {
+                    missilesToRemove.add(missile);
+                }
+            }
+        }
+        if (!hitEnemies.isEmpty())
+            this.notifyObservers(Aspect.MISSILE_ENEMY_HIT);
+        this.missiles.removeAll(missilesToRemove);
+
+        List<AbsEnemy> enemiesToRemove = new ArrayList<>();
+        for (AbsEnemy enemy: hitEnemies) {
+            switch (enemy.getType()) {
+                case BASIC -> enemiesToRemove.add(enemy);
+                case WITH_HELMET -> enemy.changeType(EnemyType.BASIC);
+            }
+        }
+        this.enemies.removeAll(enemiesToRemove);
+    }
+
+    private boolean isCannonTouchingWall() {
+        for (AbsWall wall: this.walls) {
+            if (this.cannon.getCollisionChecker().checkAndRespond(wall) != CollisionResponse.NO_COLLISION) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int getScore() {
+        return score;
+    }
+
+    @Override
+    public int getNumberOfMissilesShot() {
+        return numberOfMissilesShot;
+    }
+
+    @Override
+    public int getNumberOfEnemiesLeft() {
+        return enemies.size();
+    }
+
+    @Override
     public List<GameObject> getGameObjects() {
-        return Stream.concat(Stream.of(this.cannon), this.missiles.stream()).toList();
+        List<GameObject> objects = new ArrayList<>();
+        objects.add(this.cannon);
+        objects.add(this.gameInfo);
+        objects.addAll(this.missiles);
+        objects.addAll(this.enemies);
+        objects.addAll(this.walls);
+        return objects;
     }
 
+    @Override
     public Position getCannonPosition() {
         return this.cannon.getPosition();
     }
 
+    @Override
+    public double getCannonAngle() {
+        return this.cannon.getAngle();
+    }
+
+    @Override
+    public int getCannonPower() {
+        return this.cannon.getPower();
+    }
+
+    @Override
+    public IShootingMode getCannonShootingMode() {
+        return this.cannon.getShootingMode();
+    }
+
+    @Override
+    public int getCannonDynamicShootingModeNumberOfMissiles() {
+        return this.cannon.getDynamicShootingModeNumberOfMissiles();
+    }
+
+    @Override
     public List<AbsMissile> getMissiles() {
         return this.missiles;
     }
 
-    public IMovingStrategy getMovingStrategy() {
-        return this.movingStrategy;
+    @Override
+    public IMovingStrategy getMissileMovingStrategy() {
+        return this.missilesMovingStrategy;
+    }
+
+    @Override public boolean getMissilesWallPiercing() {
+        return this.missilesWallPiercing;
+    }
+
+    @Override public boolean getMissilesEnemyPiercing() {
+        return this.missilesEnemyPiercing;
     }
 
 
     /* MEMENTO */
 
     private static class Memento {
-        private int cannonPositionX;
-        private int cannonPositionY;
-        // game model snapshot (enemies, gameInfo, strategy, state)
+        private Position cannonPosition;
+        private List<AbsMissile> missiles;;
+        private List<AbsEnemy> enemies;;
+        private int score;
+        private int numberOfMissilesShot;
     }
 
+    @Override
     public Object createMemento() {
-        Memento gameModelSnapshot = new Memento();
-        gameModelSnapshot.cannonPositionX = this.getCannonPosition().getX();
-        gameModelSnapshot.cannonPositionY = this.getCannonPosition().getY();
-        return gameModelSnapshot;
+        Memento memento = new Memento();
+        memento.cannonPosition = this.getCannonPosition().clone();
+        memento.missiles = this.missiles.stream().map(AbsMissile::clone).collect(Collectors.toList());
+        memento.enemies = this.enemies.stream().map(AbsEnemy::clone).collect(Collectors.toList());
+        memento.score = this.score;
+        memento.numberOfMissilesShot = this.numberOfMissilesShot;
+        return memento;
     }
 
+    @Override
     public void setMemento(Object memento) {
-        Memento gameModelSnapshot = (Memento) memento;
-        this.cannon.getPosition().setX(gameModelSnapshot.cannonPositionX);
-        this.cannon.getPosition().setY(gameModelSnapshot.cannonPositionY);
+        Memento memento_ = (Memento) memento;
+        this.getCannonPosition().setX(memento_.cannonPosition.getX());
+        this.getCannonPosition().setY(memento_.cannonPosition.getY());
+        this.missiles = memento_.missiles;
+        this.enemies = memento_.enemies;
+        this.score = memento_.score;
+        this.numberOfMissilesShot = memento_.numberOfMissilesShot;
     }
 }

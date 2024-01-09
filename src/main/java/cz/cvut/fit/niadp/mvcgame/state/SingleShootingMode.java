@@ -1,11 +1,12 @@
 package cz.cvut.fit.niadp.mvcgame.state;
 
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsCannon;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon.AbsCannon;
 
 public class SingleShootingMode implements IShootingMode {
     @Override
     public String getName() {
-        return SingleShootingMode.class.getSimpleName();
+        return SingleShootingMode.class.getSimpleName()
+                .replace("ShootingMode", "");
     }
 
     @Override

@@ -19,9 +19,8 @@ public class GameView implements IObserver {
     public GameView(IGameModel model) {
         this.gameGraphics = new GameGraphics(NoGraphics.getInstance());
         this.model = model;
-        this.model.registerObserver(this, Aspect.OBJECT_POSITIONS);
-        this.model.registerObserver(this, Aspect.OBJECT_ANGLES);
         this.model.registerObserver(this, Aspect.STATUS);
+        this.model.registerObserver(this, Aspect.OBJECT_POSITIONS);
         this.controller = new GameController(this.model);
         this.render = new GameObjectsRender();
     }
@@ -44,10 +43,10 @@ public class GameView implements IObserver {
     @Override
     public void update(Aspect aspect) {
         switch (aspect) {
-            case OBJECT_POSITIONS:
-            case OBJECT_ANGLES:
             case STATUS:
+            case OBJECT_POSITIONS:
                 this.render();
+                break;
             default: {}
         }
     }

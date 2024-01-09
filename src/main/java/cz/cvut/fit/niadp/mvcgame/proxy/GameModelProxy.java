@@ -3,10 +3,11 @@ package cz.cvut.fit.niadp.mvcgame.proxy;
 import cz.cvut.fit.niadp.mvcgame.command.AbstractGameCommand;
 import cz.cvut.fit.niadp.mvcgame.model.IGameModel;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
-import cz.cvut.fit.niadp.mvcgame.model.gameObjects.AbsMissile;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.model.gameObjects.GameObject;
 import cz.cvut.fit.niadp.mvcgame.observer.Aspect;
 import cz.cvut.fit.niadp.mvcgame.observer.IObserver;
+import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 import cz.cvut.fit.niadp.mvcgame.strategy.IMovingStrategy;
 
 import java.util.List;
@@ -90,6 +91,16 @@ public class GameModelProxy implements IGameModel {
     }
 
     @Override
+    public void toggleMissilesWallPiercing() {
+        this.subject.toggleMissilesWallPiercing();
+    }
+
+    @Override
+    public void toggleMissilesEnemyPiercing() {
+        this.subject.toggleMissilesEnemyPiercing();;
+    }
+
+    @Override
     public void registerObserver(IObserver obs, Aspect aspect) {
         this.subject.registerObserver(obs, aspect);
     }
@@ -105,6 +116,21 @@ public class GameModelProxy implements IGameModel {
     }
 
     @Override
+    public int getScore() {
+        return this.subject.getScore();
+    }
+
+    @Override
+    public int getNumberOfMissilesShot() {
+        return this.subject.getNumberOfMissilesShot();
+    }
+
+    @Override
+    public int getNumberOfEnemiesLeft() {
+        return this.subject.getNumberOfEnemiesLeft();
+    }
+
+    @Override
     public List<GameObject> getGameObjects() {
         return this.subject.getGameObjects();
     }
@@ -115,13 +141,41 @@ public class GameModelProxy implements IGameModel {
     }
 
     @Override
+    public double getCannonAngle() {
+        return this.subject.getCannonAngle();
+    }
+
+    @Override
+    public int getCannonPower() {
+        return this.subject.getCannonPower();
+    }
+
+    @Override
+    public IShootingMode getCannonShootingMode() {
+        return this.subject.getCannonShootingMode();
+    }
+
+    @Override
+    public int getCannonDynamicShootingModeNumberOfMissiles() {
+        return this.subject.getCannonDynamicShootingModeNumberOfMissiles();
+    }
+
+    @Override
     public List<AbsMissile> getMissiles() {
         return this.subject.getMissiles();
     }
 
     @Override
-    public IMovingStrategy getMovingStrategy() {
-        return this.subject.getMovingStrategy();
+    public IMovingStrategy getMissileMovingStrategy() {
+        return this.subject.getMissileMovingStrategy();
+    }
+
+    @Override public boolean getMissilesWallPiercing() {
+        return this.subject.getMissilesWallPiercing();
+    }
+
+    @Override public boolean getMissilesEnemyPiercing() {
+        return this.subject.getMissilesEnemyPiercing();
     }
 
     @Override

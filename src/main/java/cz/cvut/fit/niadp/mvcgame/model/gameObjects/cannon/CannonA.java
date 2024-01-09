@@ -1,22 +1,27 @@
-package cz.cvut.fit.niadp.mvcgame.model.gameObjects;
+package cz.cvut.fit.niadp.mvcgame.model.gameObjects.cannon;
 
 import cz.cvut.fit.niadp.mvcgame.abstractfactory.IGameObjectsFactory;
 import cz.cvut.fit.niadp.mvcgame.config.MvcGameConfig;
+import cz.cvut.fit.niadp.mvcgame.iterator.IIterator;
 import cz.cvut.fit.niadp.mvcgame.model.Position;
 import cz.cvut.fit.niadp.mvcgame.model.Vector;
-import cz.cvut.fit.niadp.mvcgame.state.DoubleShootingMode;
+import cz.cvut.fit.niadp.mvcgame.model.gameObjects.missile.AbsMissile;
 import cz.cvut.fit.niadp.mvcgame.state.DynamicShootingMode;
-import cz.cvut.fit.niadp.mvcgame.state.SingleShootingMode;
+import cz.cvut.fit.niadp.mvcgame.state.IShootingMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CannonA extends AbsCannon {
 
-    private IGameObjectsFactory gameObjectsFactory;
-    private List<AbsMissile> shootingBatch;
+    private final IGameObjectsFactory gameObjectsFactory;
+    private final List<AbsMissile> shootingBatch;
 
-    public CannonA(Position initPosition, IGameObjectsFactory gameObjectsFactory) {
+    public CannonA(Position initPosition,
+                   IIterator<IShootingMode> shootingModeIterator, DynamicShootingMode dynamicShootingMode,
+                   IGameObjectsFactory gameObjectsFactory) {
+        super();
+
         this.position = initPosition;
         this.gameObjectsFactory = gameObjectsFactory;
 
@@ -24,7 +29,10 @@ public class CannonA extends AbsCannon {
         this.angle = MvcGameConfig.INIT_ANGLE;
 
         this.shootingBatch = new ArrayList<>();
-        this.shootingMode = SINGLE_SHOOTING_MODE;
+
+        this.DYNAMIC_SHOOTING_MODE = dynamicShootingMode;
+        this.shootingModeIterator = shootingModeIterator;
+        this.shootingMode = this.shootingModeIterator.next();
     }
 
     @Override
@@ -39,12 +47,12 @@ public class CannonA extends AbsCannon {
 
     @Override
     public void aimUp() {
-        this.angle -= MvcGameConfig.ANGLE_STEP;
+        this.angle = (this.angle - MvcGameConfig.ANGLE_STEP) % (2 * Math.PI);
     }
 
     @Override
     public void aimDown() {
-        this.angle += MvcGameConfig.ANGLE_STEP;
+        this.angle = (this.angle + MvcGameConfig.ANGLE_STEP - 2 * Math.PI) % (2 * Math.PI);
     }
 
     @Override
@@ -59,7 +67,11 @@ public class CannonA extends AbsCannon {
 
     @Override
     public void primitiveShoot() {
-        this.shootingBatch.add(this.gameObjectsFactory.createMissile(this.angle, this.power));
+        this.shootingBatch.add(this.gameObjectsFactory.createMissile(
+                this.angle,
+                this.power,
+                MvcGameConfig.DEFAULT_MISSILE_LIFETIME
+        ));
     }
 
     @Override
@@ -71,13 +83,7 @@ public class CannonA extends AbsCannon {
 
     @Override
     public void toggleShootingMode() {
-        if (this.shootingMode instanceof SingleShootingMode) {
-            this.shootingMode = DOUBLE_SHOOTING_MODE;
-        } else if (this.shootingMode instanceof DoubleShootingMode) {
-            this.shootingMode = DYNAMIC_SHOOTING_MODE;
-        } else if (this.shootingMode instanceof DynamicShootingMode) {
-            this.shootingMode = SINGLE_SHOOTING_MODE;
-        }
+        this.shootingMode = shootingModeIterator.next();
     }
 
     @Override
@@ -88,5 +94,10 @@ public class CannonA extends AbsCannon {
     @Override
     public void removeMissilesForDynamicShootingMode(int toRemove) {
         DYNAMIC_SHOOTING_MODE.removeMissiles(toRemove);
+    }
+
+    @Override
+    public int getDynamicShootingModeNumberOfMissiles() {
+        return DYNAMIC_SHOOTING_MODE.getNumberOfMissiles();
     }
 }

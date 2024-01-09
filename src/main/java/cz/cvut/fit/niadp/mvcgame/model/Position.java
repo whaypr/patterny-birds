@@ -9,6 +9,11 @@ public class Position {
 		this.dimY = posY;
 	}
 
+	public Position(Position other) {
+		this.dimX = other.dimX;
+		this.dimY = other.dimY;
+	}
+
 	public int getX() {
 		return dimX;
 	}
@@ -28,5 +33,9 @@ public class Position {
 	public void add(Vector vector) {
 		this.setX(this.getX() + vector.getDX());
 		this.setY(this.getY() + vector.getDY());
+	}
+
+	public Position clone() {
+		return new Position(this);
 	}
 }
